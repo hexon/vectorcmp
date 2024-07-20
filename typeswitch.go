@@ -2,6 +2,12 @@ package vectorcmp
 
 // VectorEquals compares each entry in rows to search and enables the corresponding bit in dst if equal.
 // Prefer calling VectorEquals8/16/32/64 directly.
+//
+//	for i, v := range rows {
+//	  if search == v {
+//	    dst[i/8] |= 1 << (i % 8)
+//	  }
+//	}
 func VectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
@@ -19,6 +25,12 @@ func VectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows
 
 // VectorGreaterThan compares each entry in rows to search and enables the corresponding bit in dst if search > rows[i].
 // Prefer calling VectorGreaterThan8/16/32/64 directly.
+//
+//	for i, v := range rows {
+//	  if search > v {
+//	    dst[i/8] |= 1 << (i % 8)
+//	  }
+//	}
 func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
@@ -36,6 +48,12 @@ func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T,
 
 // VectorLessThan compares each entry in rows to search and enables the corresponding bit in dst if search < rows[i].
 // Prefer calling VectorLessThan8/16/32/64 directly.
+//
+//	for i, v := range rows {
+//	  if search < v {
+//	    dst[i/8] |= 1 << (i % 8)
+//	  }
+//	}
 func VectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
@@ -53,6 +71,12 @@ func VectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, ro
 
 // VectorGreaterEquals compares each entry in rows to search and enables the corresponding bit in dst if search >= rows[i].
 // Prefer calling VectorGreaterEquals8/16/32/64 directly.
+//
+//	for i, v := range rows {
+//	  if search >= v {
+//	    dst[i/8] |= 1 << (i % 8)
+//	  }
+//	}
 func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
@@ -70,6 +94,12 @@ func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search 
 
 // VectorLesserEquals compares each entry in rows to search and enables the corresponding bit in dst if search <= rows[i].
 // Prefer calling VectorLesserEquals8/16/32/64 directly.
+//
+//	for i, v := range rows {
+//	  if search <= v {
+//	    dst[i/8] |= 1 << (i % 8)
+//	  }
+//	}
 func VectorLesserEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
