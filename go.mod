@@ -1,4 +1,4 @@
-module github.com/Jille/vectorcmp
+module github.com/hexon/vectorcmp
 
 go 1.18
 
