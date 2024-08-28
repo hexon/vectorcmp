@@ -9,9 +9,31 @@ DATA constants<>+4(SB)/4, $0x11111111
 DATA constants<>+8(SB)/4, $0x01010101
 GLOBL constants<>(SB), RODATA|NOPTR, $12
 
-// func asmBulkEquals8(dstMask []byte, b uint8, rows []uint8)
+DATA const_zeroes<>+0(SB)/4, $0x00000000
+DATA const_zeroes<>+4(SB)/4, $0x00000000
+DATA const_zeroes<>+8(SB)/4, $0x00000000
+DATA const_zeroes<>+12(SB)/4, $0x00000000
+GLOBL const_zeroes<>(SB), RODATA|NOPTR, $16
+
+DATA const_onezero<>+0(SB)/4, $0x01000100
+DATA const_onezero<>+4(SB)/4, $0x01000100
+DATA const_onezero<>+8(SB)/4, $0x01000100
+DATA const_onezero<>+12(SB)/4, $0x01000100
+GLOBL const_onezero<>(SB), RODATA|NOPTR, $16
+
+DATA const_three_through_zero<>+0(SB)/4, $0x03020100
+DATA const_three_through_zero<>+4(SB)/4, $0x03020100
+DATA const_three_through_zero<>+8(SB)/4, $0x03020100
+DATA const_three_through_zero<>+12(SB)/4, $0x03020100
+GLOBL const_three_through_zero<>(SB), RODATA|NOPTR, $16
+
+DATA const_seven_through_zero<>+0(SB)/8, $0x0706050403020100
+DATA const_seven_through_zero<>+8(SB)/8, $0x0706050403020100
+GLOBL const_seven_through_zero<>(SB), RODATA|NOPTR, $16
+
+// func asmAVX2Equals8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmBulkEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2Equals8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -45,9 +67,47 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterThan8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXEquals8(dstMask []byte, b uint8, rows []uint8)
+// Requires: AVX, SSE2
+TEXT ·asmAVXEquals8(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVB    b+24(FP), BL
+	MOVQ    BX, X0
+	VPSHUFB const_zeroes<>+0(SB), X0, X0
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPEQB X1, X0, X1
+	VPCMPEQB X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Write the registers to dstMask
+	MOVW BX, (AX)
+	MOVW SI, 2(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000004, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000020, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2GreaterThan8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmBulkGreaterThan8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThan8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -81,9 +141,47 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLessThan8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXGreaterThan8(dstMask []byte, b uint8, rows []uint8)
+// Requires: AVX, SSE2
+TEXT ·asmAVXGreaterThan8(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVB    b+24(FP), BL
+	MOVQ    BX, X0
+	VPSHUFB const_zeroes<>+0(SB), X0, X0
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTB X1, X0, X1
+	VPCMPGTB X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Write the registers to dstMask
+	MOVW BX, (AX)
+	MOVW SI, 2(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000004, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000020, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2LessThan8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmBulkLessThan8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThan8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -117,9 +215,47 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXLessThan8(dstMask []byte, b uint8, rows []uint8)
+// Requires: AVX, SSE2
+TEXT ·asmAVXLessThan8(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVB    b+24(FP), BL
+	MOVQ    BX, X0
+	VPSHUFB const_zeroes<>+0(SB), X0, X0
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTB X0, X1, X1
+	VPCMPGTB X0, X2, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Write the registers to dstMask
+	MOVW BX, (AX)
+	MOVW SI, 2(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000004, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000020, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2GreaterEquals8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmBulkGreaterEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEquals8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -157,9 +293,51 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLesserEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXGreaterEquals8(dstMask []byte, b uint8, rows []uint8)
+// Requires: AVX, SSE2
+TEXT ·asmAVXGreaterEquals8(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVB    b+24(FP), BL
+	MOVQ    BX, X0
+	VPSHUFB const_zeroes<>+0(SB), X0, X0
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTB X0, X1, X1
+	VPCMPGTB X0, X2, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
+	NOTW BX
+	NOTW SI
+
+	// Write the registers to dstMask
+	MOVW BX, (AX)
+	MOVW SI, 2(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000004, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000020, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2LesserEquals8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmBulkLesserEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEquals8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -197,9 +375,51 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXLesserEquals8(dstMask []byte, b uint8, rows []uint8)
+// Requires: AVX, SSE2
+TEXT ·asmAVXLesserEquals8(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVB    b+24(FP), BL
+	MOVQ    BX, X0
+	VPSHUFB const_zeroes<>+0(SB), X0, X0
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTB X1, X0, X1
+	VPCMPGTB X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
+	NOTW BX
+	NOTW SI
+
+	// Write the registers to dstMask
+	MOVW BX, (AX)
+	MOVW SI, 2(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000004, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000020, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2Equals16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2Equals16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -240,9 +460,54 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterThan16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXEquals16(dstMask []byte, b uint16, rows []uint16)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXEquals16(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVW    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_onezero<>+0(SB), X0, X0
+
+	// Load the mask 01010101... which we will use with PEXT to drop half the bits
+	MOVL constants<>+0(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPEQW X1, X0, X1
+	VPCMPEQW X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Write the registers to dstMask
+	MOVB BL, (AX)
+	MOVB SI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2GreaterThan16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkGreaterThan16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThan16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -283,9 +548,54 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLessThan16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXGreaterThan16(dstMask []byte, b uint16, rows []uint16)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXGreaterThan16(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVW    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_onezero<>+0(SB), X0, X0
+
+	// Load the mask 01010101... which we will use with PEXT to drop half the bits
+	MOVL constants<>+0(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTW X1, X0, X1
+	VPCMPGTW X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Write the registers to dstMask
+	MOVB BL, (AX)
+	MOVB SI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2LessThan16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkLessThan16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThan16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -326,9 +636,54 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXLessThan16(dstMask []byte, b uint16, rows []uint16)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXLessThan16(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVW    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_onezero<>+0(SB), X0, X0
+
+	// Load the mask 01010101... which we will use with PEXT to drop half the bits
+	MOVL constants<>+0(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTW X0, X1, X1
+	VPCMPGTW X0, X2, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Write the registers to dstMask
+	MOVB BL, (AX)
+	MOVB SI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2GreaterEquals16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkGreaterEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEquals16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -373,9 +728,58 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLesserEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXGreaterEquals16(dstMask []byte, b uint16, rows []uint16)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXGreaterEquals16(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVW    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_onezero<>+0(SB), X0, X0
+
+	// Load the mask 01010101... which we will use with PEXT to drop half the bits
+	MOVL constants<>+0(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTW X0, X1, X1
+	VPCMPGTW X0, X2, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
+	NOTB BL
+	NOTB SI
+
+	// Write the registers to dstMask
+	MOVB BL, (AX)
+	MOVB SI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2LesserEquals16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkLesserEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEquals16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -420,9 +824,58 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXLesserEquals16(dstMask []byte, b uint16, rows []uint16)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXLesserEquals16(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVW    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_onezero<>+0(SB), X0, X0
+
+	// Load the mask 01010101... which we will use with PEXT to drop half the bits
+	MOVL constants<>+0(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTW X1, X0, X1
+	VPCMPGTW X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
+	NOTB BL
+	NOTB SI
+
+	// Write the registers to dstMask
+	MOVB BL, (AX)
+	MOVB SI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2Equals32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2Equals32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -463,9 +916,55 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterThan32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXEquals32(dstMask []byte, b uint32, rows []uint32)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXEquals32(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVL    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPEQD X1, X0, X1
+	VPCMPEQD X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2GreaterThan32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkGreaterThan32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThan32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -506,9 +1005,55 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLessThan32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXGreaterThan32(dstMask []byte, b uint32, rows []uint32)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXGreaterThan32(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVL    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTD X1, X0, X1
+	VPCMPGTD X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2LessThan32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkLessThan32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThan32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -549,9 +1094,55 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXLessThan32(dstMask []byte, b uint32, rows []uint32)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXLessThan32(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVL    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTD X0, X1, X1
+	VPCMPGTD X0, X2, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2GreaterEquals32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkGreaterEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEquals32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -596,9 +1187,57 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLesserEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXGreaterEquals32(dstMask []byte, b uint32, rows []uint32)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXGreaterEquals32(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVL    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTD X0, X1, X1
+	VPCMPGTD X0, X2, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	NOTB BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2LesserEquals32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkLesserEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEquals32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -643,9 +1282,57 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkEquals64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVXLesserEquals32(dstMask []byte, b uint32, rows []uint32)
+// Requires: AVX, BMI2, SSE2
+TEXT ·asmAVXLesserEquals32(SB), NOSPLIT, $0-56
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+32(FP), CX
+	MOVQ rows_len+40(FP), DX
+
+	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
+	MOVL    b+24(FP), BX
+	MOVQ    BX, X0
+	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X1
+	VMOVDQU 16(CX), X2
+
+	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VPCMPGTD X1, X0, X1
+	VPCMPGTD X2, X0, X2
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X1, BX
+	VPMOVMSKB X2, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	NOTB BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	RET
+
+// func asmAVX2Equals64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkEquals64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2Equals64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -673,8 +1360,7 @@ loop:
 	PEXTL DI, BX, BX
 	PEXTL DI, SI, SI
 
-	// Write the registers to dstMask
-	// Each register contains 4 bytes, so we first combine pairs before writing them back
+	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
 	ORB  SI, BL
 	MOVB BL, (AX)
@@ -688,9 +1374,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterThan64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2GreaterThan64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkGreaterThan64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThan64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -718,8 +1404,7 @@ loop:
 	PEXTL DI, BX, BX
 	PEXTL DI, SI, SI
 
-	// Write the registers to dstMask
-	// Each register contains 4 bytes, so we first combine pairs before writing them back
+	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
 	ORB  SI, BL
 	MOVB BL, (AX)
@@ -733,9 +1418,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLessThan64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2LessThan64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkLessThan64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThan64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -763,8 +1448,7 @@ loop:
 	PEXTL DI, BX, BX
 	PEXTL DI, SI, SI
 
-	// Write the registers to dstMask
-	// Each register contains 4 bytes, so we first combine pairs before writing them back
+	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
 	ORB  SI, BL
 	MOVB BL, (AX)
@@ -778,9 +1462,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkGreaterEquals64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2GreaterEquals64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkGreaterEquals64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEquals64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -809,8 +1493,7 @@ loop:
 	PEXTL DI, SI, SI
 
 	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
-	// Write the registers to dstMask
-	// Each register contains 4 bytes, so we first combine pairs before writing them back
+	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
 	ORB  SI, BL
 	NOTB BL
@@ -825,9 +1508,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmBulkLesserEquals64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2LesserEquals64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmBulkLesserEquals64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEquals64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -856,8 +1539,7 @@ loop:
 	PEXTL DI, SI, SI
 
 	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
-	// Write the registers to dstMask
-	// Each register contains 4 bytes, so we first combine pairs before writing them back
+	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
 	ORB  SI, BL
 	NOTB BL
