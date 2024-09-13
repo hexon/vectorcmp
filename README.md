@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/Jille/vectorcmp.svg)](https://pkg.go.dev/github.com/Jille/vectorcmp)
 
-This library provides functions to do comparions on many rows using AVX2's VPCMP instruction. Fallback code is transparantly used if AVX2 is not available.
+This library provides functions to do comparions on many rows using AVX2's VPCMP instruction. Fallback code is transparently used if AVX2 is not available.
 
 ## VectorEquals
 
