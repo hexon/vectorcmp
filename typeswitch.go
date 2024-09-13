@@ -1,9 +1,9 @@
 package vectorcmp
 
 // VectorEquals compares each entry in rows to search and enables the corresponding bit in dst if equal.
-// dst must be zeroed before this call.
 // Prefer calling VectorEquals8/16/32/64 directly.
 //
+//	clear(dst)
 //	for i, v := range rows {
 //	  if search == v {
 //	    dst[i/8] |= 1 << (i % 8)
@@ -25,9 +25,9 @@ func VectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows
 }
 
 // VectorGreaterThan compares each entry in rows to search and enables the corresponding bit in dst if search > rows[i].
-// dst must be zeroed before this call.
 // Prefer calling VectorGreaterThan8/16/32/64 directly.
 //
+//	clear(dst)
 //	for i, v := range rows {
 //	  if search > v {
 //	    dst[i/8] |= 1 << (i % 8)
@@ -49,9 +49,9 @@ func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T,
 }
 
 // VectorLessThan compares each entry in rows to search and enables the corresponding bit in dst if search < rows[i].
-// dst must be zeroed before this call.
 // Prefer calling VectorLessThan8/16/32/64 directly.
 //
+//	clear(dst)
 //	for i, v := range rows {
 //	  if search < v {
 //	    dst[i/8] |= 1 << (i % 8)
@@ -73,9 +73,9 @@ func VectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, ro
 }
 
 // VectorGreaterEquals compares each entry in rows to search and enables the corresponding bit in dst if search >= rows[i].
-// dst must be zeroed before this call.
 // Prefer calling VectorGreaterEquals8/16/32/64 directly.
 //
+//	clear(dst)
 //	for i, v := range rows {
 //	  if search >= v {
 //	    dst[i/8] |= 1 << (i % 8)
@@ -97,9 +97,9 @@ func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search 
 }
 
 // VectorLesserEquals compares each entry in rows to search and enables the corresponding bit in dst if search <= rows[i].
-// dst must be zeroed before this call.
 // Prefer calling VectorLesserEquals8/16/32/64 directly.
 //
+//	clear(dst)
 //	for i, v := range rows {
 //	  if search <= v {
 //	    dst[i/8] |= 1 << (i % 8)

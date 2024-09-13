@@ -10,6 +10,7 @@ The easiest way to explain is to just show the fallback code.
 
 ```go
 func goVectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+  clear(dst)
   for i, v := range rows {
     if search == v {
       dst[i/8] |= 1 << (i % 8)
