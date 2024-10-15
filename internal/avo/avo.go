@@ -109,6 +109,9 @@ func main() {
 	for _, w := range []int{8, 16, 32, 64} {
 		for _, o := range []CmpOp{Equals, GreaterThan, LessThan, GreaterEquals, LesserEquals} {
 			fastFilter(w, o, false)
+			if w >= 32 {
+				fastFilter(w, o, true)
+			}
 		}
 	}
 
@@ -249,6 +252,27 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) 
 	}
 	Commentf("Compare all bytes in each %s register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)", vecRegName)
 	for i := 0; i < rounds; i++ {
+		if isfp {
+			var op U8
+			switch cmpOp {
+			case Equals:
+				op = U8(0x08) // EQ_UQ: Equal (unordered, non-signaling)
+			case LessThan:
+				op = U8(0x11) // LT_OQ: Less-than (ordered, nonsignaling)
+			case LesserEquals:
+				op = U8(0x12) // LE_OQ: Less-than-or-equal (ordered, nonsignaling)
+			case GreaterThan:
+				op = U8(0x16) // NLE_UQ: Not-less-than-or-equal (unordered, nonsignaling)
+			case GreaterEquals:
+				op = U8(0x15) // NLT_UQ: Not-less-than (unordered, nonsignaling)
+			}
+			if width == 32 {
+				VCMPPS(op, ymms[i], bRepeated, ymms[i])
+			} else {
+				VCMPPD(op, ymms[i], bRepeated, ymms[i])
+			}
+			continue
+		}
 		var instr func(ops ...Op)
 		switch width {
 		case 8:
@@ -307,7 +331,7 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) 
 		}
 	}
 	resultBits := avxLevel.Bits() / width
-	implementedWithInversion := cmpOp == GreaterEquals || cmpOp == LesserEquals
+	implementedWithInversion := (cmpOp == GreaterEquals || cmpOp == LesserEquals) && !isfp
 	if implementedWithInversion {
 		Commentf("To get %s semantics, we flipped the arguments of VPCMPGT and now invert the result", cmpOp)
 		for _, r := range intermediates {

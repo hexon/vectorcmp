@@ -2,14 +2,14 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/Jille/vectorcmp.svg)](https://pkg.go.dev/github.com/Jille/vectorcmp)
 
-This library provides functions to do comparions on many rows using AVX2's VPCMP instruction. Fallback code is transparently used if AVX2 is not available.
+This library provides functions to do comparions on many rows using AVX2's VPCMP instruction. Fallback code is transparently used if AVX(2) is not available.
 
 ## VectorEquals
 
 The easiest way to explain is to just show the fallback code.
 
 ```go
-func goVectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func goVectorEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
   clear(dst)
   for i, v := range rows {
     if search == v {

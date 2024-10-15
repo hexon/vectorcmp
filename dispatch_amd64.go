@@ -136,6 +136,18 @@ func VectorEquals32(dstMask []byte, b uint32, rows []uint32) {
 	}
 	goVectorEquals(dstMask, b, rows)
 }
+func VectorEqualsFloat32(dstMask []byte, b float32, rows []float32) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2EqualsFloat32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXEqualsFloat32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorEquals(dstMask, b, rows)
+}
 func VectorGreaterThan32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
 		asmAVX2GreaterThanUint32(dstMask, b, rows[:len(rows) & ^15])
@@ -143,6 +155,18 @@ func VectorGreaterThan32(dstMask []byte, b uint32, rows []uint32) {
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
 		asmAVXGreaterThanUint32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorGreaterThan(dstMask, b, rows)
+}
+func VectorGreaterThanFloat32(dstMask []byte, b float32, rows []float32) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2GreaterThanFloat32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXGreaterThanFloat32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -160,6 +184,18 @@ func VectorLessThan32(dstMask []byte, b uint32, rows []uint32) {
 	}
 	goVectorLessThan(dstMask, b, rows)
 }
+func VectorLessThanFloat32(dstMask []byte, b float32, rows []float32) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2LessThanFloat32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXLessThanFloat32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorLessThan(dstMask, b, rows)
+}
 func VectorGreaterEquals32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
 		asmAVX2GreaterEqualsUint32(dstMask, b, rows[:len(rows) & ^15])
@@ -167,6 +203,18 @@ func VectorGreaterEquals32(dstMask []byte, b uint32, rows []uint32) {
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
 		asmAVXGreaterEqualsUint32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorGreaterEquals(dstMask, b, rows)
+}
+func VectorGreaterEqualsFloat32(dstMask []byte, b float32, rows []float32) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2GreaterEqualsFloat32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXGreaterEqualsFloat32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -184,9 +232,29 @@ func VectorLesserEquals32(dstMask []byte, b uint32, rows []uint32) {
 	}
 	goVectorLesserEquals(dstMask, b, rows)
 }
+func VectorLesserEqualsFloat32(dstMask []byte, b float32, rows []float32) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2LesserEqualsFloat32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXLesserEqualsFloat32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorLesserEquals(dstMask, b, rows)
+}
 func VectorEquals64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
 		asmAVX2EqualsUint64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorEquals(dstMask, b, rows)
+}
+func VectorEqualsFloat64(dstMask []byte, b float64, rows []float64) {
+	if hasAVX2() && len(rows) >= 8 {
+		asmAVX2EqualsFloat64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -200,9 +268,25 @@ func VectorGreaterThan64(dstMask []byte, b uint64, rows []uint64) {
 	}
 	goVectorGreaterThan(dstMask, b, rows)
 }
+func VectorGreaterThanFloat64(dstMask []byte, b float64, rows []float64) {
+	if hasAVX2() && len(rows) >= 8 {
+		asmAVX2GreaterThanFloat64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorGreaterThan(dstMask, b, rows)
+}
 func VectorLessThan64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
 		asmAVX2LessThanUint64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorLessThan(dstMask, b, rows)
+}
+func VectorLessThanFloat64(dstMask []byte, b float64, rows []float64) {
+	if hasAVX2() && len(rows) >= 8 {
+		asmAVX2LessThanFloat64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -216,9 +300,25 @@ func VectorGreaterEquals64(dstMask []byte, b uint64, rows []uint64) {
 	}
 	goVectorGreaterEquals(dstMask, b, rows)
 }
+func VectorGreaterEqualsFloat64(dstMask []byte, b float64, rows []float64) {
+	if hasAVX2() && len(rows) >= 8 {
+		asmAVX2GreaterEqualsFloat64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorGreaterEquals(dstMask, b, rows)
+}
 func VectorLesserEquals64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
 		asmAVX2LesserEqualsUint64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorLesserEquals(dstMask, b, rows)
+}
+func VectorLesserEqualsFloat64(dstMask []byte, b float64, rows []float64) {
+	if hasAVX2() && len(rows) >= 8 {
+		asmAVX2LesserEqualsFloat64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}

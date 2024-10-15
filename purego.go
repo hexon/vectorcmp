@@ -1,6 +1,6 @@
 package vectorcmp
 
-func goVectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func goVectorEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	zero(dst)
 	for i, v := range rows {
 		if search == v {
@@ -9,7 +9,7 @@ func goVectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, ro
 	}
 }
 
-func goVectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func goVectorGreaterThan[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	zero(dst)
 	for i, v := range rows {
 		if search > v {
@@ -18,7 +18,7 @@ func goVectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search 
 	}
 }
 
-func goVectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func goVectorLessThan[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	zero(dst)
 	for i, v := range rows {
 		if search < v {
@@ -27,7 +27,7 @@ func goVectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, 
 	}
 }
 
-func goVectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func goVectorGreaterEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	zero(dst)
 	for i, v := range rows {
 		if search >= v {
@@ -36,7 +36,7 @@ func goVectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, searc
 	}
 }
 
-func goVectorLesserEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func goVectorLesserEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	zero(dst)
 	for i, v := range rows {
 		if search <= v {

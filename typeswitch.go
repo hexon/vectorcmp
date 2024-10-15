@@ -9,7 +9,7 @@ package vectorcmp
 //	    dst[i/8] |= 1 << (i % 8)
 //	  }
 //	}
-func VectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func VectorEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
 		VectorEquals8(dst, uint8(search), rows)
@@ -19,6 +19,10 @@ func VectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows
 		VectorEquals32(dst, uint32(search), rows)
 	case []uint64:
 		VectorEquals64(dst, uint64(search), rows)
+	case []float32:
+		VectorEqualsFloat32(dst, float32(search), rows)
+	case []float64:
+		VectorEqualsFloat64(dst, float64(search), rows)
 	default:
 		panic("generic type not listed in type switch")
 	}
@@ -33,7 +37,7 @@ func VectorEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows
 //	    dst[i/8] |= 1 << (i % 8)
 //	  }
 //	}
-func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
 		VectorGreaterThan8(dst, uint8(search), rows)
@@ -43,6 +47,10 @@ func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T,
 		VectorGreaterThan32(dst, uint32(search), rows)
 	case []uint64:
 		VectorGreaterThan64(dst, uint64(search), rows)
+	case []float32:
+		VectorGreaterThanFloat32(dst, float32(search), rows)
+	case []float64:
+		VectorGreaterThanFloat64(dst, float64(search), rows)
 	default:
 		panic("generic type not listed in type switch")
 	}
@@ -57,7 +65,7 @@ func VectorGreaterThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T,
 //	    dst[i/8] |= 1 << (i % 8)
 //	  }
 //	}
-func VectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func VectorLessThan[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
 		VectorLessThan8(dst, uint8(search), rows)
@@ -67,6 +75,10 @@ func VectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, ro
 		VectorLessThan32(dst, uint32(search), rows)
 	case []uint64:
 		VectorLessThan64(dst, uint64(search), rows)
+	case []float32:
+		VectorLessThanFloat32(dst, float32(search), rows)
+	case []float64:
+		VectorLessThanFloat64(dst, float64(search), rows)
 	default:
 		panic("generic type not listed in type switch")
 	}
@@ -81,7 +93,7 @@ func VectorLessThan[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, ro
 //	    dst[i/8] |= 1 << (i % 8)
 //	  }
 //	}
-func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
 		VectorGreaterEquals8(dst, uint8(search), rows)
@@ -91,6 +103,10 @@ func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search 
 		VectorGreaterEquals32(dst, uint32(search), rows)
 	case []uint64:
 		VectorGreaterEquals64(dst, uint64(search), rows)
+	case []float32:
+		VectorGreaterEqualsFloat32(dst, float32(search), rows)
+	case []float64:
+		VectorGreaterEqualsFloat64(dst, float64(search), rows)
 	default:
 		panic("generic type not listed in type switch")
 	}
@@ -105,7 +121,7 @@ func VectorGreaterEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search 
 //	    dst[i/8] |= 1 << (i % 8)
 //	  }
 //	}
-func VectorLesserEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T, rows []T) {
+func VectorLesserEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	switch rows := any(rows).(type) {
 	case []uint8:
 		VectorLesserEquals8(dst, uint8(search), rows)
@@ -115,6 +131,10 @@ func VectorLesserEquals[T uint8 | uint16 | uint32 | uint64](dst []byte, search T
 		VectorLesserEquals32(dst, uint32(search), rows)
 	case []uint64:
 		VectorLesserEquals64(dst, uint64(search), rows)
+	case []float32:
+		VectorLesserEqualsFloat32(dst, float32(search), rows)
+	case []float64:
+		VectorLesserEqualsFloat64(dst, float64(search), rows)
 	default:
 		panic("generic type not listed in type switch")
 	}
