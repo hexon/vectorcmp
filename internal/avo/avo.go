@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	. "github.com/mmcloughlin/avo/build"
 	. "github.com/mmcloughlin/avo/operand"
@@ -62,6 +63,20 @@ func (a AVXLevel) Bits() int {
 	}
 }
 
+type IsFloating bool
+
+func (f IsFloating) GoType(bits int) string {
+	if f {
+		return fmt.Sprintf("float%d", bits)
+	}
+	return fmt.Sprintf("uint%d", bits)
+}
+
+func (f IsFloating) GoName(bits int) string {
+	t := f.GoType(bits)
+	return strings.ToUpper(t[:1]) + t[1:]
+}
+
 func main() {
 	DATA(0, U32(0b01010101010101010101010101010101))
 	DATA(4, U32(0b00010001000100010001000100010001))
@@ -93,7 +108,7 @@ func main() {
 
 	for _, w := range []int{8, 16, 32, 64} {
 		for _, o := range []CmpOp{Equals, GreaterThan, LessThan, GreaterEquals, LesserEquals} {
-			fastFilter(w, o)
+			fastFilter(w, o, false)
 		}
 	}
 
@@ -121,15 +136,19 @@ type GPOp interface {
 	reg.GP
 }
 
-func fastFilter(width int, cmpOp CmpOp) {
-	fmt.Fprintf(dispatcherBoth, "func Vector%s%d(dstMask []byte, b uint%d, rows []uint%d) {\n", cmpOp, width, width, width)
+func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
+	var infix string
+	if isfp {
+		infix = "Float"
+	}
+	fmt.Fprintf(dispatcherBoth, "func Vector%s%s%d(dstMask []byte, b %s, rows []%s) {\n", cmpOp, infix, width, isfp.GoType(width), isfp.GoType(width))
 	fmt.Fprintf(&dispatcherAmd64, "	if hasAVX2() && len(rows) >= %d {\n", 256*rounds/width)
-	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%d(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, width, 256*rounds/width-1)
+	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 256*rounds/width-1)
 	if width < 64 {
 		fmt.Fprintf(&dispatcherAmd64, "	} else if hasAVX() && len(rows) >= %d {\n", 128*rounds/width)
-		fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%d(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, width, 128*rounds/width-1)
+		fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 128*rounds/width-1)
 		fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 128*rounds/width-1)
 		fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 128*rounds/width-1)
 	}
@@ -137,14 +156,14 @@ func fastFilter(width int, cmpOp CmpOp) {
 	fmt.Fprintf(dispatcherBoth, "	goVector%s(dstMask, b, rows)\n", cmpOp)
 	fmt.Fprintf(dispatcherBoth, "}\n")
 
-	fastFilterImpl(AVX2, width, cmpOp)
+	fastFilterImpl(AVX2, width, cmpOp, isfp)
 	if width < 64 {
-		fastFilterImpl(AVX, width, cmpOp)
+		fastFilterImpl(AVX, width, cmpOp, isfp)
 	}
 }
 
-func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp) {
-	TEXT(fmt.Sprintf("asm%s%s%d", avxLevel, cmpOp, width), NOSPLIT, fmt.Sprintf("func(dstMask []byte, b uint%d, rows []uint%d)", width, width))
+func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) {
+	TEXT(fmt.Sprintf("asm%s%s%s", avxLevel, cmpOp, isfp.GoName(width)), NOSPLIT, fmt.Sprintf("func(dstMask []byte, b %s, rows []%s)", isfp.GoType(width), isfp.GoType(width)))
 	Pragma("noescape")
 
 	dstMask := Load(Param("dstMask").Base(), GP64())

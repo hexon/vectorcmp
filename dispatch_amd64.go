@@ -6,11 +6,11 @@ package vectorcmp
 
 func VectorEquals8(dstMask []byte, b uint8, rows []uint8) {
 	if hasAVX2() && len(rows) >= 64 {
-		asmAVX2Equals8(dstMask, b, rows[:len(rows) & ^63])
+		asmAVX2EqualsUint8(dstMask, b, rows[:len(rows) & ^63])
 		dstMask = dstMask[(len(rows) & ^63)/8:]
 		rows = rows[len(rows) & ^63:]
 	} else if hasAVX() && len(rows) >= 32 {
-		asmAVXEquals8(dstMask, b, rows[:len(rows) & ^31])
+		asmAVXEqualsUint8(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	}
@@ -18,11 +18,11 @@ func VectorEquals8(dstMask []byte, b uint8, rows []uint8) {
 }
 func VectorGreaterThan8(dstMask []byte, b uint8, rows []uint8) {
 	if hasAVX2() && len(rows) >= 64 {
-		asmAVX2GreaterThan8(dstMask, b, rows[:len(rows) & ^63])
+		asmAVX2GreaterThanUint8(dstMask, b, rows[:len(rows) & ^63])
 		dstMask = dstMask[(len(rows) & ^63)/8:]
 		rows = rows[len(rows) & ^63:]
 	} else if hasAVX() && len(rows) >= 32 {
-		asmAVXGreaterThan8(dstMask, b, rows[:len(rows) & ^31])
+		asmAVXGreaterThanUint8(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	}
@@ -30,11 +30,11 @@ func VectorGreaterThan8(dstMask []byte, b uint8, rows []uint8) {
 }
 func VectorLessThan8(dstMask []byte, b uint8, rows []uint8) {
 	if hasAVX2() && len(rows) >= 64 {
-		asmAVX2LessThan8(dstMask, b, rows[:len(rows) & ^63])
+		asmAVX2LessThanUint8(dstMask, b, rows[:len(rows) & ^63])
 		dstMask = dstMask[(len(rows) & ^63)/8:]
 		rows = rows[len(rows) & ^63:]
 	} else if hasAVX() && len(rows) >= 32 {
-		asmAVXLessThan8(dstMask, b, rows[:len(rows) & ^31])
+		asmAVXLessThanUint8(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	}
@@ -42,11 +42,11 @@ func VectorLessThan8(dstMask []byte, b uint8, rows []uint8) {
 }
 func VectorGreaterEquals8(dstMask []byte, b uint8, rows []uint8) {
 	if hasAVX2() && len(rows) >= 64 {
-		asmAVX2GreaterEquals8(dstMask, b, rows[:len(rows) & ^63])
+		asmAVX2GreaterEqualsUint8(dstMask, b, rows[:len(rows) & ^63])
 		dstMask = dstMask[(len(rows) & ^63)/8:]
 		rows = rows[len(rows) & ^63:]
 	} else if hasAVX() && len(rows) >= 32 {
-		asmAVXGreaterEquals8(dstMask, b, rows[:len(rows) & ^31])
+		asmAVXGreaterEqualsUint8(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	}
@@ -54,11 +54,11 @@ func VectorGreaterEquals8(dstMask []byte, b uint8, rows []uint8) {
 }
 func VectorLesserEquals8(dstMask []byte, b uint8, rows []uint8) {
 	if hasAVX2() && len(rows) >= 64 {
-		asmAVX2LesserEquals8(dstMask, b, rows[:len(rows) & ^63])
+		asmAVX2LesserEqualsUint8(dstMask, b, rows[:len(rows) & ^63])
 		dstMask = dstMask[(len(rows) & ^63)/8:]
 		rows = rows[len(rows) & ^63:]
 	} else if hasAVX() && len(rows) >= 32 {
-		asmAVXLesserEquals8(dstMask, b, rows[:len(rows) & ^31])
+		asmAVXLesserEqualsUint8(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	}
@@ -66,11 +66,11 @@ func VectorLesserEquals8(dstMask []byte, b uint8, rows []uint8) {
 }
 func VectorEquals16(dstMask []byte, b uint16, rows []uint16) {
 	if hasAVX2() && len(rows) >= 32 {
-		asmAVX2Equals16(dstMask, b, rows[:len(rows) & ^31])
+		asmAVX2EqualsUint16(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	} else if hasAVX() && len(rows) >= 16 {
-		asmAVXEquals16(dstMask, b, rows[:len(rows) & ^15])
+		asmAVXEqualsUint16(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	}
@@ -78,11 +78,11 @@ func VectorEquals16(dstMask []byte, b uint16, rows []uint16) {
 }
 func VectorGreaterThan16(dstMask []byte, b uint16, rows []uint16) {
 	if hasAVX2() && len(rows) >= 32 {
-		asmAVX2GreaterThan16(dstMask, b, rows[:len(rows) & ^31])
+		asmAVX2GreaterThanUint16(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	} else if hasAVX() && len(rows) >= 16 {
-		asmAVXGreaterThan16(dstMask, b, rows[:len(rows) & ^15])
+		asmAVXGreaterThanUint16(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	}
@@ -90,11 +90,11 @@ func VectorGreaterThan16(dstMask []byte, b uint16, rows []uint16) {
 }
 func VectorLessThan16(dstMask []byte, b uint16, rows []uint16) {
 	if hasAVX2() && len(rows) >= 32 {
-		asmAVX2LessThan16(dstMask, b, rows[:len(rows) & ^31])
+		asmAVX2LessThanUint16(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	} else if hasAVX() && len(rows) >= 16 {
-		asmAVXLessThan16(dstMask, b, rows[:len(rows) & ^15])
+		asmAVXLessThanUint16(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	}
@@ -102,11 +102,11 @@ func VectorLessThan16(dstMask []byte, b uint16, rows []uint16) {
 }
 func VectorGreaterEquals16(dstMask []byte, b uint16, rows []uint16) {
 	if hasAVX2() && len(rows) >= 32 {
-		asmAVX2GreaterEquals16(dstMask, b, rows[:len(rows) & ^31])
+		asmAVX2GreaterEqualsUint16(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	} else if hasAVX() && len(rows) >= 16 {
-		asmAVXGreaterEquals16(dstMask, b, rows[:len(rows) & ^15])
+		asmAVXGreaterEqualsUint16(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	}
@@ -114,11 +114,11 @@ func VectorGreaterEquals16(dstMask []byte, b uint16, rows []uint16) {
 }
 func VectorLesserEquals16(dstMask []byte, b uint16, rows []uint16) {
 	if hasAVX2() && len(rows) >= 32 {
-		asmAVX2LesserEquals16(dstMask, b, rows[:len(rows) & ^31])
+		asmAVX2LesserEqualsUint16(dstMask, b, rows[:len(rows) & ^31])
 		dstMask = dstMask[(len(rows) & ^31)/8:]
 		rows = rows[len(rows) & ^31:]
 	} else if hasAVX() && len(rows) >= 16 {
-		asmAVXLesserEquals16(dstMask, b, rows[:len(rows) & ^15])
+		asmAVXLesserEqualsUint16(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	}
@@ -126,11 +126,11 @@ func VectorLesserEquals16(dstMask []byte, b uint16, rows []uint16) {
 }
 func VectorEquals32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
-		asmAVX2Equals32(dstMask, b, rows[:len(rows) & ^15])
+		asmAVX2EqualsUint32(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
-		asmAVXEquals32(dstMask, b, rows[:len(rows) & ^7])
+		asmAVXEqualsUint32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -138,11 +138,11 @@ func VectorEquals32(dstMask []byte, b uint32, rows []uint32) {
 }
 func VectorGreaterThan32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
-		asmAVX2GreaterThan32(dstMask, b, rows[:len(rows) & ^15])
+		asmAVX2GreaterThanUint32(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
-		asmAVXGreaterThan32(dstMask, b, rows[:len(rows) & ^7])
+		asmAVXGreaterThanUint32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -150,11 +150,11 @@ func VectorGreaterThan32(dstMask []byte, b uint32, rows []uint32) {
 }
 func VectorLessThan32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
-		asmAVX2LessThan32(dstMask, b, rows[:len(rows) & ^15])
+		asmAVX2LessThanUint32(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
-		asmAVXLessThan32(dstMask, b, rows[:len(rows) & ^7])
+		asmAVXLessThanUint32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -162,11 +162,11 @@ func VectorLessThan32(dstMask []byte, b uint32, rows []uint32) {
 }
 func VectorGreaterEquals32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
-		asmAVX2GreaterEquals32(dstMask, b, rows[:len(rows) & ^15])
+		asmAVX2GreaterEqualsUint32(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
-		asmAVXGreaterEquals32(dstMask, b, rows[:len(rows) & ^7])
+		asmAVXGreaterEqualsUint32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -174,11 +174,11 @@ func VectorGreaterEquals32(dstMask []byte, b uint32, rows []uint32) {
 }
 func VectorLesserEquals32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2() && len(rows) >= 16 {
-		asmAVX2LesserEquals32(dstMask, b, rows[:len(rows) & ^15])
+		asmAVX2LesserEqualsUint32(dstMask, b, rows[:len(rows) & ^15])
 		dstMask = dstMask[(len(rows) & ^15)/8:]
 		rows = rows[len(rows) & ^15:]
 	} else if hasAVX() && len(rows) >= 8 {
-		asmAVXLesserEquals32(dstMask, b, rows[:len(rows) & ^7])
+		asmAVXLesserEqualsUint32(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -186,7 +186,7 @@ func VectorLesserEquals32(dstMask []byte, b uint32, rows []uint32) {
 }
 func VectorEquals64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
-		asmAVX2Equals64(dstMask, b, rows[:len(rows) & ^7])
+		asmAVX2EqualsUint64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -194,7 +194,7 @@ func VectorEquals64(dstMask []byte, b uint64, rows []uint64) {
 }
 func VectorGreaterThan64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
-		asmAVX2GreaterThan64(dstMask, b, rows[:len(rows) & ^7])
+		asmAVX2GreaterThanUint64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -202,7 +202,7 @@ func VectorGreaterThan64(dstMask []byte, b uint64, rows []uint64) {
 }
 func VectorLessThan64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
-		asmAVX2LessThan64(dstMask, b, rows[:len(rows) & ^7])
+		asmAVX2LessThanUint64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -210,7 +210,7 @@ func VectorLessThan64(dstMask []byte, b uint64, rows []uint64) {
 }
 func VectorGreaterEquals64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
-		asmAVX2GreaterEquals64(dstMask, b, rows[:len(rows) & ^7])
+		asmAVX2GreaterEqualsUint64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}
@@ -218,7 +218,7 @@ func VectorGreaterEquals64(dstMask []byte, b uint64, rows []uint64) {
 }
 func VectorLesserEquals64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2() && len(rows) >= 8 {
-		asmAVX2LesserEquals64(dstMask, b, rows[:len(rows) & ^7])
+		asmAVX2LesserEqualsUint64(dstMask, b, rows[:len(rows) & ^7])
 		dstMask = dstMask[(len(rows) & ^7)/8:]
 		rows = rows[len(rows) & ^7:]
 	}

@@ -31,9 +31,9 @@ DATA const_seven_through_zero<>+0(SB)/8, $0x0706050403020100
 DATA const_seven_through_zero<>+8(SB)/8, $0x0706050403020100
 GLOBL const_seven_through_zero<>(SB), RODATA|NOPTR, $16
 
-// func asmAVX2Equals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVX2EqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmAVX2Equals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2EqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -67,9 +67,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, SSE2
-TEXT ·asmAVXEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVXEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -105,9 +105,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterThan8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVX2GreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmAVX2GreaterThan8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThanUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -141,9 +141,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXGreaterThan8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXGreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, SSE2
-TEXT ·asmAVXGreaterThan8(SB), NOSPLIT, $0-56
+TEXT ·asmAVXGreaterThanUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -179,9 +179,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LessThan8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVX2LessThanUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmAVX2LessThan8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThanUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -215,9 +215,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXLessThan8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXLessThanUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, SSE2
-TEXT ·asmAVXLessThan8(SB), NOSPLIT, $0-56
+TEXT ·asmAVXLessThanUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -253,9 +253,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVX2GreaterEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmAVX2GreaterEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -293,9 +293,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXGreaterEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXGreaterEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, SSE2
-TEXT ·asmAVXGreaterEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVXGreaterEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -335,9 +335,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LesserEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVX2LesserEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
-TEXT ·asmAVX2LesserEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -375,9 +375,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXLesserEquals8(dstMask []byte, b uint8, rows []uint8)
+// func asmAVXLesserEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, SSE2
-TEXT ·asmAVXLesserEquals8(SB), NOSPLIT, $0-56
+TEXT ·asmAVXLesserEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -417,9 +417,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2Equals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVX2EqualsUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2Equals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2EqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -460,9 +460,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVXEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -505,9 +505,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterThan16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVX2GreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2GreaterThan16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThanUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -548,9 +548,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXGreaterThan16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXGreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXGreaterThan16(SB), NOSPLIT, $0-56
+TEXT ·asmAVXGreaterThanUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -593,9 +593,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LessThan16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVX2LessThanUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2LessThan16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThanUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -636,9 +636,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXLessThan16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXLessThanUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXLessThan16(SB), NOSPLIT, $0-56
+TEXT ·asmAVXLessThanUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -681,9 +681,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVX2GreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2GreaterEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -728,9 +728,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXGreaterEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXGreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXGreaterEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVXGreaterEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -777,9 +777,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LesserEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVX2LesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2LesserEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -824,9 +824,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXLesserEquals16(dstMask []byte, b uint16, rows []uint16)
+// func asmAVXLesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXLesserEquals16(SB), NOSPLIT, $0-56
+TEXT ·asmAVXLesserEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -873,9 +873,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2Equals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVX2EqualsUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2Equals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2EqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -916,9 +916,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVXEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -962,9 +962,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterThan32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVX2GreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2GreaterThan32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThanUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1005,9 +1005,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXGreaterThan32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXGreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXGreaterThan32(SB), NOSPLIT, $0-56
+TEXT ·asmAVXGreaterThanUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1051,9 +1051,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LessThan32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVX2LessThanUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2LessThan32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThanUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1094,9 +1094,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXLessThan32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXLessThanUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXLessThan32(SB), NOSPLIT, $0-56
+TEXT ·asmAVXLessThanUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1140,9 +1140,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVX2GreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2GreaterEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1187,9 +1187,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXGreaterEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXGreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXGreaterEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVXGreaterEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1235,9 +1235,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LesserEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVX2LesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2LesserEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1282,9 +1282,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVXLesserEquals32(dstMask []byte, b uint32, rows []uint32)
+// func asmAVXLesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 // Requires: AVX, BMI2, SSE2
-TEXT ·asmAVXLesserEquals32(SB), NOSPLIT, $0-56
+TEXT ·asmAVXLesserEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1330,9 +1330,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2Equals64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2EqualsUint64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2Equals64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2EqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1374,9 +1374,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterThan64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2GreaterThanUint64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2GreaterThan64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterThanUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1418,9 +1418,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LessThan64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2LessThanUint64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2LessThan64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LessThanUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1462,9 +1462,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2GreaterEquals64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2GreaterEqualsUint64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2GreaterEquals64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2GreaterEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX
@@ -1508,9 +1508,9 @@ loop:
 	JNZ  loop
 	RET
 
-// func asmAVX2LesserEquals64(dstMask []byte, b uint64, rows []uint64)
+// func asmAVX2LesserEqualsUint64(dstMask []byte, b uint64, rows []uint64)
 // Requires: AVX, AVX2, BMI2
-TEXT ·asmAVX2LesserEquals64(SB), NOSPLIT, $0-56
+TEXT ·asmAVX2LesserEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
 	MOVQ rows_len+40(FP), DX

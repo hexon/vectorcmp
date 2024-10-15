@@ -5,106 +5,106 @@
 package vectorcmp
 
 //go:noescape
-func asmAVX2Equals8(dstMask []byte, b uint8, rows []uint8)
+func asmAVX2EqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVXEquals8(dstMask []byte, b uint8, rows []uint8)
+func asmAVXEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVX2GreaterThan8(dstMask []byte, b uint8, rows []uint8)
+func asmAVX2GreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVXGreaterThan8(dstMask []byte, b uint8, rows []uint8)
+func asmAVXGreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVX2LessThan8(dstMask []byte, b uint8, rows []uint8)
+func asmAVX2LessThanUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVXLessThan8(dstMask []byte, b uint8, rows []uint8)
+func asmAVXLessThanUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVX2GreaterEquals8(dstMask []byte, b uint8, rows []uint8)
+func asmAVX2GreaterEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVXGreaterEquals8(dstMask []byte, b uint8, rows []uint8)
+func asmAVXGreaterEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVX2LesserEquals8(dstMask []byte, b uint8, rows []uint8)
+func asmAVX2LesserEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVXLesserEquals8(dstMask []byte, b uint8, rows []uint8)
+func asmAVXLesserEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
-func asmAVX2Equals16(dstMask []byte, b uint16, rows []uint16)
+func asmAVX2EqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVXEquals16(dstMask []byte, b uint16, rows []uint16)
+func asmAVXEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVX2GreaterThan16(dstMask []byte, b uint16, rows []uint16)
+func asmAVX2GreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVXGreaterThan16(dstMask []byte, b uint16, rows []uint16)
+func asmAVXGreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVX2LessThan16(dstMask []byte, b uint16, rows []uint16)
+func asmAVX2LessThanUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVXLessThan16(dstMask []byte, b uint16, rows []uint16)
+func asmAVXLessThanUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVX2GreaterEquals16(dstMask []byte, b uint16, rows []uint16)
+func asmAVX2GreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVXGreaterEquals16(dstMask []byte, b uint16, rows []uint16)
+func asmAVXGreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVX2LesserEquals16(dstMask []byte, b uint16, rows []uint16)
+func asmAVX2LesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVXLesserEquals16(dstMask []byte, b uint16, rows []uint16)
+func asmAVXLesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
-func asmAVX2Equals32(dstMask []byte, b uint32, rows []uint32)
+func asmAVX2EqualsUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVXEquals32(dstMask []byte, b uint32, rows []uint32)
+func asmAVXEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVX2GreaterThan32(dstMask []byte, b uint32, rows []uint32)
+func asmAVX2GreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVXGreaterThan32(dstMask []byte, b uint32, rows []uint32)
+func asmAVXGreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVX2LessThan32(dstMask []byte, b uint32, rows []uint32)
+func asmAVX2LessThanUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVXLessThan32(dstMask []byte, b uint32, rows []uint32)
+func asmAVXLessThanUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVX2GreaterEquals32(dstMask []byte, b uint32, rows []uint32)
+func asmAVX2GreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVXGreaterEquals32(dstMask []byte, b uint32, rows []uint32)
+func asmAVXGreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVX2LesserEquals32(dstMask []byte, b uint32, rows []uint32)
+func asmAVX2LesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVXLesserEquals32(dstMask []byte, b uint32, rows []uint32)
+func asmAVXLesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
 
 //go:noescape
-func asmAVX2Equals64(dstMask []byte, b uint64, rows []uint64)
+func asmAVX2EqualsUint64(dstMask []byte, b uint64, rows []uint64)
 
 //go:noescape
-func asmAVX2GreaterThan64(dstMask []byte, b uint64, rows []uint64)
+func asmAVX2GreaterThanUint64(dstMask []byte, b uint64, rows []uint64)
 
 //go:noescape
-func asmAVX2LessThan64(dstMask []byte, b uint64, rows []uint64)
+func asmAVX2LessThanUint64(dstMask []byte, b uint64, rows []uint64)
 
 //go:noescape
-func asmAVX2GreaterEquals64(dstMask []byte, b uint64, rows []uint64)
+func asmAVX2GreaterEqualsUint64(dstMask []byte, b uint64, rows []uint64)
 
 //go:noescape
-func asmAVX2LesserEquals64(dstMask []byte, b uint64, rows []uint64)
+func asmAVX2LesserEqualsUint64(dstMask []byte, b uint64, rows []uint64)
