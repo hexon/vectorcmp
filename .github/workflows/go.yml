@@ -21,13 +21,16 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
+    - name: Test platform default
       run: go test -count=500 ./...
 
-    - name: Test GOAMD64=v3
+    - name: Test AVX2
       run: go test -count=500 ./...
       env:
         GOAMD64: v3
+
+    - name: Test AVX1
+      run: go test -count=500 -tags vectorcmp_testing_avx ./...
 
     - name: Test purego
       run: go test -count=500 -tags purego ./...

@@ -1,4 +1,4 @@
-//go:build amd64 && !amd64.v3 && !purego
+//go:build amd64 && !amd64.v3 && !purego && !vectorcmp_testing_avx
 
 package vectorcmp
 

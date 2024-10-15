@@ -1,4 +1,4 @@
-//go:build amd64.v3 && !purego && !vectorcmp_testing_avx
+//go:build vectorcmp_testing_avx
 
 package vectorcmp
 
@@ -7,5 +7,5 @@ func hasAVX() bool {
 }
 
 func hasAVX2() bool {
-	return true
+	return false
 }
