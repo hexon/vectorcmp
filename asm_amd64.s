@@ -65,6 +65,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000040, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXEqualsUint8(dstMask []byte, b uint8, rows []uint8)
@@ -103,6 +104,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
@@ -139,6 +141,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000040, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
@@ -177,6 +180,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LessThanUint8(dstMask []byte, b uint8, rows []uint8)
@@ -213,6 +217,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000040, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLessThanUint8(dstMask []byte, b uint8, rows []uint8)
@@ -251,6 +256,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterEqualsUint8(dstMask []byte, b uint8, rows []uint8)
@@ -291,6 +297,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000040, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterEqualsUint8(dstMask []byte, b uint8, rows []uint8)
@@ -333,6 +340,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LesserEqualsUint8(dstMask []byte, b uint8, rows []uint8)
@@ -373,6 +381,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000040, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLesserEqualsUint8(dstMask []byte, b uint8, rows []uint8)
@@ -415,6 +424,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2EqualsUint16(dstMask []byte, b uint16, rows []uint16)
@@ -458,6 +468,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXEqualsUint16(dstMask []byte, b uint16, rows []uint16)
@@ -503,6 +514,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
@@ -546,6 +558,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
@@ -591,6 +604,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LessThanUint16(dstMask []byte, b uint16, rows []uint16)
@@ -634,6 +648,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLessThanUint16(dstMask []byte, b uint16, rows []uint16)
@@ -679,6 +694,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
@@ -726,6 +742,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
@@ -775,6 +792,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
@@ -822,6 +840,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000020, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
@@ -871,6 +890,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2EqualsUint32(dstMask []byte, b uint32, rows []uint32)
@@ -914,6 +934,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXEqualsUint32(dstMask []byte, b uint32, rows []uint32)
@@ -960,6 +981,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2EqualsFloat32(dstMask []byte, b float32, rows []float32)
@@ -1003,6 +1025,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXEqualsFloat32(dstMask []byte, b float32, rows []float32)
@@ -1049,6 +1072,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1092,6 +1116,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1138,6 +1163,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterThanFloat32(dstMask []byte, b float32, rows []float32)
@@ -1181,6 +1207,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterThanFloat32(dstMask []byte, b float32, rows []float32)
@@ -1227,6 +1254,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LessThanUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1270,6 +1298,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLessThanUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1316,6 +1345,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LessThanFloat32(dstMask []byte, b float32, rows []float32)
@@ -1359,6 +1389,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLessThanFloat32(dstMask []byte, b float32, rows []float32)
@@ -1405,6 +1436,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1452,6 +1484,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1500,6 +1533,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterEqualsFloat32(dstMask []byte, b float32, rows []float32)
@@ -1543,6 +1577,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXGreaterEqualsFloat32(dstMask []byte, b float32, rows []float32)
@@ -1589,6 +1624,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1636,6 +1672,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
@@ -1684,6 +1721,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LesserEqualsFloat32(dstMask []byte, b float32, rows []float32)
@@ -1727,6 +1765,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000010, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVXLesserEqualsFloat32(dstMask []byte, b float32, rows []float32)
@@ -1773,6 +1812,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2EqualsUint64(dstMask []byte, b uint64, rows []uint64)
@@ -1817,6 +1857,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2EqualsFloat64(dstMask []byte, b float64, rows []float64)
@@ -1861,6 +1902,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterThanUint64(dstMask []byte, b uint64, rows []uint64)
@@ -1905,6 +1947,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterThanFloat64(dstMask []byte, b float64, rows []float64)
@@ -1949,6 +1992,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LessThanUint64(dstMask []byte, b uint64, rows []uint64)
@@ -1993,6 +2037,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LessThanFloat64(dstMask []byte, b float64, rows []float64)
@@ -2037,6 +2082,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterEqualsUint64(dstMask []byte, b uint64, rows []uint64)
@@ -2083,6 +2129,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2GreaterEqualsFloat64(dstMask []byte, b float64, rows []float64)
@@ -2127,6 +2174,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LesserEqualsUint64(dstMask []byte, b uint64, rows []uint64)
@@ -2173,6 +2221,7 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET
 
 // func asmAVX2LesserEqualsFloat64(dstMask []byte, b float64, rows []float64)
@@ -2217,4 +2266,5 @@ loop:
 	// Decrement loop counter
 	SUBQ $0x00000008, DX
 	JNZ  loop
+	VZEROALL
 	RET

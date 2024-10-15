@@ -419,5 +419,6 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) 
 	Comment("Decrement loop counter")
 	SUBQ(U32(rounds*avxLevel.Bits()/width), l)
 	JNZ(LabelRef("loop"))
+	VZEROALL()
 	RET()
 }
