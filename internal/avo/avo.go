@@ -16,8 +16,6 @@ import (
 	"github.com/mmcloughlin/avo/reg"
 )
 
-const rounds = 2
-
 var (
 	constants                = GLOBL("constants", RODATA|NOPTR)
 	const_zeroes             Mem
@@ -151,25 +149,25 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	if isfp {
 		infix = "Float"
 	}
+	rounds := 2
+	if width == 64 {
+		rounds = 4
+	}
 	fmt.Fprintf(dispatcherBoth, "func Vector%s%s%d(dstMask []byte, b %s, rows []%s) {\n", cmpOp, infix, width, isfp.GoType(width), isfp.GoType(width))
 	fmt.Fprintf(&dispatcherAmd64, "	if hasAVX2() && len(rows) >= %d {\n", 256*rounds/width)
 	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 256*rounds/width-1)
-	if width < 64 {
-		fmt.Fprintf(&dispatcherAmd64, "	} else if hasAVX() && len(rows) >= %d {\n", 128*rounds/width)
-		fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 128*rounds/width-1)
-		fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 128*rounds/width-1)
-		fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 128*rounds/width-1)
-	}
+	fmt.Fprintf(&dispatcherAmd64, "	} else if hasAVX() && len(rows) >= %d {\n", 128*rounds/width)
+	fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 128*rounds/width-1)
+	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 128*rounds/width-1)
+	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "	}\n")
 	fmt.Fprintf(dispatcherBoth, "	goVector%s(dstMask, b, rows)\n", cmpOp)
 	fmt.Fprintf(dispatcherBoth, "}\n")
 
-	fastFilterImpl(AVX2, width, cmpOp, isfp)
-	if width < 64 {
-		fastFilterImpl(AVX, width, cmpOp, isfp)
-	}
+	fastFilterImpl(AVX2, width, cmpOp, isfp, rounds)
+	fastFilterImpl(AVX, width, cmpOp, isfp, rounds)
 
 	fmt.Fprintf(&generatedTest, "func TestVector%s%s%d(t *testing.T) {\n", cmpOp, infix, width)
 	fmt.Fprintf(&generatedTest, "	t.Parallel()\n")
@@ -205,7 +203,7 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	fmt.Fprintf(&generatedTest, "}\n")
 }
 
-func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) {
+func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, rounds int) {
 	TEXT(fmt.Sprintf("asm%s%s%s", avxLevel, cmpOp, isfp.GoName(width)), NOSPLIT, fmt.Sprintf("func(dstMask []byte, b %s, rows []%s)", isfp.GoType(width), isfp.GoType(width)))
 	Pragma("noescape")
 
@@ -382,6 +380,8 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) 
 				NOTW(r.As16())
 			case 8:
 				NOTB(r.As8())
+			case 4, 2:
+				// Handled below after combining them
 			}
 		}
 	}
@@ -409,7 +409,19 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating) 
 			MOVB(intermediates[2*i+0].As8(), Mem{Base: dstMask, Disp: 1 * i})
 		}
 	case 2:
-		// TODO: Implement this for AVX with 64bits widths, yielding 2 bits
+		Comment("Each register contains 2 bits, so we first combine them back into bytes before writing them back")
+		for i := 0; rounds/4 > i; i++ {
+			SHLB(U8(2), intermediates[4*i+1].As8())
+			SHLB(U8(4), intermediates[4*i+2].As8())
+			SHLB(U8(6), intermediates[4*i+3].As8())
+			ORB(intermediates[4*i+1].As8(), intermediates[4*i+0].As8())
+			ORB(intermediates[4*i+3].As8(), intermediates[4*i+2].As8())
+			ORB(intermediates[4*i+2].As8(), intermediates[4*i+0].As8())
+			if implementedWithInversion {
+				NOTB(intermediates[4*i+0].As8())
+			}
+			MOVB(intermediates[4*i+0].As8(), Mem{Base: dstMask, Disp: 1 * i})
+		}
 	}
 
 	Comment("Update our offsets into rows and dstMask")
