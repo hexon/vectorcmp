@@ -294,15 +294,15 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 			var op U8
 			switch cmpOp {
 			case Equals:
-				op = U8(0x08) // EQ_UQ: Equal (unordered, non-signaling)
+				op = U8(0x00) // EQ_OQ: Equal (ordered, non-signaling)
 			case LessThan:
 				op = U8(0x11) // LT_OQ: Less-than (ordered, nonsignaling)
 			case LesserEquals:
 				op = U8(0x12) // LE_OQ: Less-than-or-equal (ordered, nonsignaling)
 			case GreaterThan:
-				op = U8(0x16) // NLE_UQ: Not-less-than-or-equal (unordered, nonsignaling)
+				op = U8(0x1E) // GT_OQ: Greater-than (ordered, nonsignaling)
 			case GreaterEquals:
-				op = U8(0x15) // NLT_UQ: Not-less-than (unordered, nonsignaling)
+				op = U8(0x1D) // GE_OQ: Greater-than-or-equal (ordered, nonsignaling)
 			}
 			if width == 32 {
 				VCMPPS(op, ymms[i], bRepeated, ymms[i])
