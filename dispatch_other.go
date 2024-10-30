@@ -94,3 +94,9 @@ func VectorLesserEquals64(dstMask []byte, b uint64, rows []uint64) {
 func VectorLesserEqualsFloat64(dstMask []byte, b float64, rows []float64) {
 	goVectorLesserEquals(dstMask, b, rows)
 }
+func VectorIsNaNFloat32(dstMask []byte, rows []float32) {
+	goVectorIsNaN(dstMask, rows)
+}
+func VectorIsNaNFloat64(dstMask []byte, rows []float64) {
+	goVectorIsNaN(dstMask, rows)
+}

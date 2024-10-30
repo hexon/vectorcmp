@@ -45,6 +45,15 @@ func goVectorLesserEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64
 	}
 }
 
+func goVectorIsNaN[T float32 | float64](dst []byte, rows []T) {
+	zero(dst)
+	for i, v := range rows {
+		if v != v {
+			dst[i/8] |= 1 << (i % 8)
+		}
+	}
+}
+
 func zero(dst []byte) {
 	for i := range dst {
 		dst[i] = 0

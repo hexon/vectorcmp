@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	. "github.com/mmcloughlin/avo/build"
+	"github.com/mmcloughlin/avo/operand"
 	. "github.com/mmcloughlin/avo/operand"
 	"github.com/mmcloughlin/avo/reg"
 )
@@ -43,6 +44,7 @@ var (
 	LessThan      CmpOp = "LessThan"
 	GreaterEquals CmpOp = "GreaterEquals"
 	LesserEquals  CmpOp = "LesserEquals"
+	IsNaN         CmpOp = "IsNaN"
 )
 
 type AVXLevel string
@@ -119,6 +121,8 @@ func main() {
 			}
 		}
 	}
+	fastFilter(32, IsNaN, true)
+	fastFilter(64, IsNaN, true)
 
 	Generate()
 
@@ -153,17 +157,25 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	if width == 64 {
 		rounds = 4
 	}
-	fmt.Fprintf(dispatcherBoth, "func Vector%s%s%d(dstMask []byte, b %s, rows []%s) {\n", cmpOp, infix, width, isfp.GoType(width), isfp.GoType(width))
+	defB := fmt.Sprintf("b %s, ", isfp.GoType(width))
+	useB := "b, "
+	testB := "'b', "
+	if cmpOp == IsNaN {
+		defB = ""
+		useB = ""
+		testB = ""
+	}
+	fmt.Fprintf(dispatcherBoth, "func Vector%s%s%d(dstMask []byte, %srows []%s) {\n", cmpOp, infix, width, defB, isfp.GoType(width))
 	fmt.Fprintf(&dispatcherAmd64, "	if hasAVX2() && len(rows) >= %d {\n", 256*rounds/width)
-	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 256*rounds/width-1)
+	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%s(dstMask, %srows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), useB, 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "	} else if hasAVX() && len(rows) >= %d {\n", 128*rounds/width)
-	fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%s(dstMask, b, rows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), 128*rounds/width-1)
+	fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%s(dstMask, %srows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), useB, 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "	}\n")
-	fmt.Fprintf(dispatcherBoth, "	goVector%s(dstMask, b, rows)\n", cmpOp)
+	fmt.Fprintf(dispatcherBoth, "	goVector%s(dstMask, %srows)\n", cmpOp, useB)
 	fmt.Fprintf(dispatcherBoth, "}\n")
 
 	fastFilterImpl(AVX2, width, cmpOp, isfp, rounds)
@@ -174,8 +186,8 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	fmt.Fprintf(&generatedTest, "	buf := randomBuffer[%s]()\n", isfp.GoType(width))
 	fmt.Fprintf(&generatedTest, "	got := destinationBuffer(buf)\n")
 	fmt.Fprintf(&generatedTest, "	want := destinationBuffer(buf)\n")
-	fmt.Fprintf(&generatedTest, "	Vector%s%s%d(want, 'b', buf)\n", cmpOp, infix, width)
-	fmt.Fprintf(&generatedTest, "	goVector%s(got, 'b', buf)\n", cmpOp)
+	fmt.Fprintf(&generatedTest, "	Vector%s%s%d(want, %sbuf)\n", cmpOp, infix, width, testB)
+	fmt.Fprintf(&generatedTest, "	goVector%s(got, %sbuf)\n", cmpOp, testB)
 	fmt.Fprintf(&generatedTest, "	if !bytes.Equal(want, got) {\n")
 	fmt.Fprintf(&generatedTest, "		t.Fatalf(\"ASM version returned a different result:\\n%%b\\n%%b\", want, got)\n")
 	fmt.Fprintf(&generatedTest, "	}\n")
@@ -189,7 +201,7 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	fmt.Fprintf(&generatedTest, "	dst := destinationBuffer(buf)\n")
 	fmt.Fprintf(&generatedTest, "	b.ResetTimer()\n")
 	fmt.Fprintf(&generatedTest, "	for i := 0; b.N > i; i++ {\n")
-	fmt.Fprintf(&generatedTest, "		Vector%s%s%d(dst, 'b', buf)\n", cmpOp, infix, width)
+	fmt.Fprintf(&generatedTest, "		Vector%s%s%d(dst, %sbuf)\n", cmpOp, infix, width, testB)
 	fmt.Fprintf(&generatedTest, "	}\n")
 	fmt.Fprintf(&generatedTest, "}\n")
 
@@ -198,13 +210,17 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	fmt.Fprintf(&generatedTest, "	dst := destinationBuffer(buf)\n")
 	fmt.Fprintf(&generatedTest, "	b.ResetTimer()\n")
 	fmt.Fprintf(&generatedTest, "	for i := 0; b.N > i; i++ {\n")
-	fmt.Fprintf(&generatedTest, "		goVector%s(dst, 'b', buf)\n", cmpOp)
+	fmt.Fprintf(&generatedTest, "		goVector%s(dst, %sbuf)\n", cmpOp, testB)
 	fmt.Fprintf(&generatedTest, "	}\n")
 	fmt.Fprintf(&generatedTest, "}\n")
 }
 
 func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, rounds int) {
-	TEXT(fmt.Sprintf("asm%s%s%s", avxLevel, cmpOp, isfp.GoName(width)), NOSPLIT, fmt.Sprintf("func(dstMask []byte, b %s, rows []%s)", isfp.GoType(width), isfp.GoType(width)))
+	defB := fmt.Sprintf("b %s, ", isfp.GoType(width))
+	if cmpOp == IsNaN {
+		defB = ""
+	}
+	TEXT(fmt.Sprintf("asm%s%s%s", avxLevel, cmpOp, isfp.GoName(width)), NOSPLIT, fmt.Sprintf("func(dstMask []byte, %srows []%s)", defB, isfp.GoType(width)))
 	Pragma("noescape")
 
 	dstMask := Load(Param("dstMask").Base(), GP64())
@@ -230,41 +246,43 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		intermediates = append(intermediates, GP32())
 	}
 
-	Commentf("Read param b into %s register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}", vecRegName)
-	b, err := Param("b").Resolve()
-	if err != nil {
-		panic(err)
-	}
-	switch avxLevel {
-	case AVX2:
-		switch width {
-		case 8:
-			VPBROADCASTB(b.Addr, bRepeated)
-		case 16:
-			VPBROADCASTW(b.Addr, bRepeated)
-		case 32:
-			VPBROADCASTD(b.Addr, bRepeated)
-		case 64:
-			VPBROADCASTQ(b.Addr, bRepeated)
+	if cmpOp != IsNaN {
+		Commentf("Read param b into %s register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}", vecRegName)
+		b, err := Param("b").Resolve()
+		if err != nil {
+			panic(err)
 		}
-	case AVX:
-		tmp := GP64()
-		switch width {
-		case 8:
-			MOVB(b.Addr, tmp.As8())
-			MOVQ(tmp, bRepeated)
-			VPSHUFB(const_zeroes.Offset(0), bRepeated, bRepeated)
-		case 16:
-			MOVW(b.Addr, tmp.As16())
-			MOVQ(tmp, bRepeated)
-			VPSHUFB(const_onezero.Offset(0), bRepeated, bRepeated)
-		case 32:
-			MOVL(b.Addr, tmp.As32())
-			MOVQ(tmp, bRepeated)
-			VPSHUFB(const_three_through_zero.Offset(0), bRepeated, bRepeated)
-		case 64:
-			MOVQ(b.Addr, bRepeated)
-			VPSHUFB(const_seven_through_zero.Offset(0), bRepeated, bRepeated)
+		switch avxLevel {
+		case AVX2:
+			switch width {
+			case 8:
+				VPBROADCASTB(b.Addr, bRepeated)
+			case 16:
+				VPBROADCASTW(b.Addr, bRepeated)
+			case 32:
+				VPBROADCASTD(b.Addr, bRepeated)
+			case 64:
+				VPBROADCASTQ(b.Addr, bRepeated)
+			}
+		case AVX:
+			tmp := GP64()
+			switch width {
+			case 8:
+				MOVB(b.Addr, tmp.As8())
+				MOVQ(tmp, bRepeated)
+				VPSHUFB(const_zeroes.Offset(0), bRepeated, bRepeated)
+			case 16:
+				MOVW(b.Addr, tmp.As16())
+				MOVQ(tmp, bRepeated)
+				VPSHUFB(const_onezero.Offset(0), bRepeated, bRepeated)
+			case 32:
+				MOVL(b.Addr, tmp.As32())
+				MOVQ(tmp, bRepeated)
+				VPSHUFB(const_three_through_zero.Offset(0), bRepeated, bRepeated)
+			case 64:
+				MOVQ(b.Addr, bRepeated)
+				VPSHUFB(const_seven_through_zero.Offset(0), bRepeated, bRepeated)
+			}
 		}
 	}
 
@@ -288,7 +306,8 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 	for i := 0; i < rounds; i++ {
 		VMOVDQU(Mem{Base: rows, Disp: avxLevel.Bits() / 8 * i}, ymms[i])
 	}
-	Commentf("Compare all bytes in each %s register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)", vecRegName)
+	Commentf("Compare all values in each %s register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)", vecRegName)
+	var compareAgainst operand.Op = bRepeated
 	for i := 0; i < rounds; i++ {
 		if isfp {
 			var op U8
@@ -303,11 +322,14 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 				op = U8(0x1E) // GT_OQ: Greater-than (ordered, nonsignaling)
 			case GreaterEquals:
 				op = U8(0x1D) // GE_OQ: Greater-than-or-equal (ordered, nonsignaling)
+			case IsNaN:
+				op = U8(0x04) // NEQ_OQ: Not-equal (unordered, non-signaling)
+				compareAgainst = ymms[i]
 			}
 			if width == 32 {
-				VCMPPS(op, ymms[i], bRepeated, ymms[i])
+				VCMPPS(op, ymms[i], compareAgainst, ymms[i])
 			} else {
-				VCMPPD(op, ymms[i], bRepeated, ymms[i])
+				VCMPPD(op, ymms[i], compareAgainst, ymms[i])
 			}
 			continue
 		}

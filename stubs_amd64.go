@@ -183,3 +183,15 @@ func asmAVX2LesserEqualsFloat64(dstMask []byte, b float64, rows []float64)
 
 //go:noescape
 func asmAVXLesserEqualsFloat64(dstMask []byte, b float64, rows []float64)
+
+//go:noescape
+func asmAVX2IsNaNFloat32(dstMask []byte, rows []float32)
+
+//go:noescape
+func asmAVXIsNaNFloat32(dstMask []byte, rows []float32)
+
+//go:noescape
+func asmAVX2IsNaNFloat64(dstMask []byte, rows []float64)
+
+//go:noescape
+func asmAVXIsNaNFloat64(dstMask []byte, rows []float64)

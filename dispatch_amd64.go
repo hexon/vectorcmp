@@ -364,3 +364,27 @@ func VectorLesserEqualsFloat64(dstMask []byte, b float64, rows []float64) {
 	}
 	goVectorLesserEquals(dstMask, b, rows)
 }
+func VectorIsNaNFloat32(dstMask []byte, rows []float32) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2IsNaNFloat32(dstMask, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXIsNaNFloat32(dstMask, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorIsNaN(dstMask, rows)
+}
+func VectorIsNaNFloat64(dstMask []byte, rows []float64) {
+	if hasAVX2() && len(rows) >= 16 {
+		asmAVX2IsNaNFloat64(dstMask, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		asmAVXIsNaNFloat64(dstMask, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorIsNaN(dstMask, rows)
+}

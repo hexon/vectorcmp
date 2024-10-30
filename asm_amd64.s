@@ -46,7 +46,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQB Y1, Y0, Y1
 	VPCMPEQB Y2, Y0, Y2
 
@@ -85,7 +85,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQB X1, X0, X1
 	VPCMPEQB X2, X0, X2
 
@@ -122,7 +122,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y1, Y0, Y1
 	VPCMPGTB Y2, Y0, Y2
 
@@ -161,7 +161,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X1, X0, X1
 	VPCMPGTB X2, X0, X2
 
@@ -198,7 +198,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y0, Y1, Y1
 	VPCMPGTB Y0, Y2, Y2
 
@@ -237,7 +237,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X0, X1, X1
 	VPCMPGTB X0, X2, X2
 
@@ -274,7 +274,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y0, Y1, Y1
 	VPCMPGTB Y0, Y2, Y2
 
@@ -317,7 +317,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X0, X1, X1
 	VPCMPGTB X0, X2, X2
 
@@ -358,7 +358,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y1, Y0, Y1
 	VPCMPGTB Y2, Y0, Y2
 
@@ -401,7 +401,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X1, X0, X1
 	VPCMPGTB X2, X0, X2
 
@@ -445,7 +445,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQW Y1, Y0, Y1
 	VPCMPEQW Y2, Y0, Y2
 
@@ -491,7 +491,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQW X1, X0, X1
 	VPCMPEQW X2, X0, X2
 
@@ -535,7 +535,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y1, Y0, Y1
 	VPCMPGTW Y2, Y0, Y2
 
@@ -581,7 +581,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X1, X0, X1
 	VPCMPGTW X2, X0, X2
 
@@ -625,7 +625,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y0, Y1, Y1
 	VPCMPGTW Y0, Y2, Y2
 
@@ -671,7 +671,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X0, X1, X1
 	VPCMPGTW X0, X2, X2
 
@@ -715,7 +715,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y0, Y1, Y1
 	VPCMPGTW Y0, Y2, Y2
 
@@ -765,7 +765,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X0, X1, X1
 	VPCMPGTW X0, X2, X2
 
@@ -813,7 +813,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y1, Y0, Y1
 	VPCMPGTW Y2, Y0, Y2
 
@@ -863,7 +863,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X1, X0, X1
 	VPCMPGTW X2, X0, X2
 
@@ -911,7 +911,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQD Y1, Y0, Y1
 	VPCMPEQD Y2, Y0, Y2
 
@@ -957,7 +957,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQD X1, X0, X1
 	VPCMPEQD X2, X0, X2
 
@@ -1002,7 +1002,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x00, Y1, Y0, Y1
 	VCMPPS $0x00, Y2, Y0, Y2
 
@@ -1048,7 +1048,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x00, X1, X0, X1
 	VCMPPS $0x00, X2, X0, X2
 
@@ -1093,7 +1093,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y1, Y0, Y1
 	VPCMPGTD Y2, Y0, Y2
 
@@ -1139,7 +1139,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X1, X0, X1
 	VPCMPGTD X2, X0, X2
 
@@ -1184,7 +1184,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x1e, Y1, Y0, Y1
 	VCMPPS $0x1e, Y2, Y0, Y2
 
@@ -1230,7 +1230,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x1e, X1, X0, X1
 	VCMPPS $0x1e, X2, X0, X2
 
@@ -1275,7 +1275,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y0, Y1, Y1
 	VPCMPGTD Y0, Y2, Y2
 
@@ -1321,7 +1321,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X0, X1, X1
 	VPCMPGTD X0, X2, X2
 
@@ -1366,7 +1366,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x11, Y1, Y0, Y1
 	VCMPPS $0x11, Y2, Y0, Y2
 
@@ -1412,7 +1412,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x11, X1, X0, X1
 	VCMPPS $0x11, X2, X0, X2
 
@@ -1457,7 +1457,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y0, Y1, Y1
 	VPCMPGTD Y0, Y2, Y2
 
@@ -1507,7 +1507,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X0, X1, X1
 	VPCMPGTD X0, X2, X2
 
@@ -1554,7 +1554,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x1d, Y1, Y0, Y1
 	VCMPPS $0x1d, Y2, Y0, Y2
 
@@ -1600,7 +1600,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x1d, X1, X0, X1
 	VCMPPS $0x1d, X2, X0, X2
 
@@ -1645,7 +1645,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y1, Y0, Y1
 	VPCMPGTD Y2, Y0, Y2
 
@@ -1695,7 +1695,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X1, X0, X1
 	VPCMPGTD X2, X0, X2
 
@@ -1742,7 +1742,7 @@ loop:
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x12, Y1, Y0, Y1
 	VCMPPS $0x12, Y2, Y0, Y2
 
@@ -1788,7 +1788,7 @@ loop:
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPS $0x12, X1, X0, X1
 	VCMPPS $0x12, X2, X0, X2
 
@@ -1835,7 +1835,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQQ Y1, Y0, Y1
 	VPCMPEQQ Y2, Y0, Y2
 	VPCMPEQQ Y3, Y0, Y3
@@ -1892,7 +1892,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPEQQ X1, X0, X1
 	VPCMPEQQ X2, X0, X2
 	VPCMPEQQ X3, X0, X3
@@ -1949,7 +1949,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x00, Y1, Y0, Y1
 	VCMPPD $0x00, Y2, Y0, Y2
 	VCMPPD $0x00, Y3, Y0, Y3
@@ -2006,7 +2006,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x00, X1, X0, X1
 	VCMPPD $0x00, X2, X0, X2
 	VCMPPD $0x00, X3, X0, X3
@@ -2063,7 +2063,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y1, Y0, Y1
 	VPCMPGTQ Y2, Y0, Y2
 	VPCMPGTQ Y3, Y0, Y3
@@ -2120,7 +2120,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X1, X0, X1
 	VPCMPGTQ X2, X0, X2
 	VPCMPGTQ X3, X0, X3
@@ -2177,7 +2177,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x1e, Y1, Y0, Y1
 	VCMPPD $0x1e, Y2, Y0, Y2
 	VCMPPD $0x1e, Y3, Y0, Y3
@@ -2234,7 +2234,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x1e, X1, X0, X1
 	VCMPPD $0x1e, X2, X0, X2
 	VCMPPD $0x1e, X3, X0, X3
@@ -2291,7 +2291,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y0, Y1, Y1
 	VPCMPGTQ Y0, Y2, Y2
 	VPCMPGTQ Y0, Y3, Y3
@@ -2348,7 +2348,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X0, X1, X1
 	VPCMPGTQ X0, X2, X2
 	VPCMPGTQ X0, X3, X3
@@ -2405,7 +2405,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x11, Y1, Y0, Y1
 	VCMPPD $0x11, Y2, Y0, Y2
 	VCMPPD $0x11, Y3, Y0, Y3
@@ -2462,7 +2462,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x11, X1, X0, X1
 	VCMPPD $0x11, X2, X0, X2
 	VCMPPD $0x11, X3, X0, X3
@@ -2519,7 +2519,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y0, Y1, Y1
 	VPCMPGTQ Y0, Y2, Y2
 	VPCMPGTQ Y0, Y3, Y3
@@ -2579,7 +2579,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X0, X1, X1
 	VPCMPGTQ X0, X2, X2
 	VPCMPGTQ X0, X3, X3
@@ -2638,7 +2638,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x1d, Y1, Y0, Y1
 	VCMPPD $0x1d, Y2, Y0, Y2
 	VCMPPD $0x1d, Y3, Y0, Y3
@@ -2695,7 +2695,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x1d, X1, X0, X1
 	VCMPPD $0x1d, X2, X0, X2
 	VCMPPD $0x1d, X3, X0, X3
@@ -2752,7 +2752,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y1, Y0, Y1
 	VPCMPGTQ Y2, Y0, Y2
 	VPCMPGTQ Y3, Y0, Y3
@@ -2812,7 +2812,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X1, X0, X1
 	VPCMPGTQ X2, X0, X2
 	VPCMPGTQ X3, X0, X3
@@ -2871,7 +2871,7 @@ loop:
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
 
-	// Compare all bytes in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x12, Y1, Y0, Y1
 	VCMPPD $0x12, Y2, Y0, Y2
 	VCMPPD $0x12, Y3, Y0, Y3
@@ -2928,7 +2928,7 @@ loop:
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
 
-	// Compare all bytes in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VCMPPD $0x12, X1, X0, X1
 	VCMPPD $0x12, X2, X0, X2
 	VCMPPD $0x12, X3, X0, X3
@@ -2939,6 +2939,196 @@ loop:
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
+
+	// Drop every second-seventh bit from these registers
+	PEXTL R9, BX, BX
+	PEXTL R9, SI, SI
+	PEXTL R9, DI, DI
+	PEXTL R9, R8, R8
+
+	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
+	SHLB $0x02, SI
+	SHLB $0x04, DI
+	SHLB $0x06, R8
+	ORB  SI, BL
+	ORB  R8, DI
+	ORB  DI, BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000040, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	VZEROALL
+	RET
+
+// func asmAVX2IsNaNFloat32(dstMask []byte, rows []float32)
+// Requires: AVX, AVX2, BMI2
+TEXT ·asmAVX2IsNaNFloat32(SB), NOSPLIT, $0-48
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+24(FP), CX
+	MOVQ rows_len+32(FP), DX
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 256-bit chunks into YMM registers
+	VMOVDQU (CX), Y0
+	VMOVDQU 32(CX), Y1
+
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VCMPPS $0x04, Y0, Y0, Y0
+	VCMPPS $0x04, Y1, Y1, Y1
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB Y0, BX
+	VPMOVMSKB Y1, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Write the registers to dstMask
+	MOVB BL, (AX)
+	MOVB SI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000040, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	VZEROALL
+	RET
+
+// func asmAVXIsNaNFloat32(dstMask []byte, rows []float32)
+// Requires: AVX, BMI2
+TEXT ·asmAVXIsNaNFloat32(SB), NOSPLIT, $0-48
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+24(FP), CX
+	MOVQ rows_len+32(FP), DX
+
+	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
+	MOVL constants<>+4(SB), DI
+
+loop:
+	// Load 2 128-bit chunks into XMM registers
+	VMOVDQU (CX), X0
+	VMOVDQU 16(CX), X1
+
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VCMPPS $0x04, X0, X0, X0
+	VCMPPS $0x04, X1, X1, X1
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X0, BX
+	VPMOVMSKB X1, SI
+
+	// Drop every second-fourth bit from these registers
+	PEXTL DI, BX, BX
+	PEXTL DI, SI, SI
+
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	MOVB BL, (AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000020, CX
+	ADDQ $0x00000001, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000008, DX
+	JNZ  loop
+	VZEROALL
+	RET
+
+// func asmAVX2IsNaNFloat64(dstMask []byte, rows []float64)
+// Requires: AVX, AVX2, BMI2
+TEXT ·asmAVX2IsNaNFloat64(SB), NOSPLIT, $0-48
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+24(FP), CX
+	MOVQ rows_len+32(FP), DX
+
+	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
+	MOVL constants<>+8(SB), R9
+
+loop:
+	// Load 4 256-bit chunks into YMM registers
+	VMOVDQU (CX), Y0
+	VMOVDQU 32(CX), Y1
+	VMOVDQU 64(CX), Y2
+	VMOVDQU 96(CX), Y3
+
+	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VCMPPD $0x04, Y0, Y0, Y0
+	VCMPPD $0x04, Y1, Y1, Y1
+	VCMPPD $0x04, Y2, Y2, Y2
+	VCMPPD $0x04, Y3, Y3, Y3
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB Y0, BX
+	VPMOVMSKB Y1, SI
+	VPMOVMSKB Y2, DI
+	VPMOVMSKB Y3, R8
+
+	// Drop every second-seventh bit from these registers
+	PEXTL R9, BX, BX
+	PEXTL R9, SI, SI
+	PEXTL R9, DI, DI
+	PEXTL R9, R8, R8
+
+	// Each register contains 4 bits, so we first combine pairs before writing them back
+	SHLB $0x04, SI
+	ORB  SI, BL
+	MOVB BL, (AX)
+	SHLB $0x04, R8
+	ORB  R8, DI
+	MOVB DI, 1(AX)
+
+	// Update our offsets into rows and dstMask
+	ADDQ $0x00000080, CX
+	ADDQ $0x00000002, AX
+
+	// Decrement loop counter
+	SUBQ $0x00000010, DX
+	JNZ  loop
+	VZEROALL
+	RET
+
+// func asmAVXIsNaNFloat64(dstMask []byte, rows []float64)
+// Requires: AVX, BMI2
+TEXT ·asmAVXIsNaNFloat64(SB), NOSPLIT, $0-48
+	MOVQ dstMask_base+0(FP), AX
+	MOVQ rows_base+24(FP), CX
+	MOVQ rows_len+32(FP), DX
+
+	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
+	MOVL constants<>+8(SB), R9
+
+loop:
+	// Load 4 128-bit chunks into XMM registers
+	VMOVDQU (CX), X0
+	VMOVDQU 16(CX), X1
+	VMOVDQU 32(CX), X2
+	VMOVDQU 48(CX), X3
+
+	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
+	VCMPPD $0x04, X0, X0, X0
+	VCMPPD $0x04, X1, X1, X1
+	VCMPPD $0x04, X2, X2, X2
+	VCMPPD $0x04, X3, X3, X3
+
+	// Take one bit of each byte and pack it into an R32
+	VPMOVMSKB X0, BX
+	VPMOVMSKB X1, SI
+	VPMOVMSKB X2, DI
+	VPMOVMSKB X3, R8
 
 	// Drop every second-seventh bit from these registers
 	PEXTL R9, BX, BX

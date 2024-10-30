@@ -906,3 +906,63 @@ func BenchmarkGoVectorLesserEqualsFloat64(b *testing.B) {
 		goVectorLesserEquals(dst, 'b', buf)
 	}
 }
+func TestVectorIsNaNFloat32(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[float32]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorIsNaNFloat32(want, buf)
+	goVectorIsNaN(got, buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorIsNaNFloat32(b *testing.B) {
+	if !hasAVX2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[float32]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorIsNaNFloat32(dst, buf)
+	}
+}
+func BenchmarkGoVectorIsNaNFloat32(b *testing.B) {
+	buf := randomBuffer[float32]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorIsNaN(dst, buf)
+	}
+}
+func TestVectorIsNaNFloat64(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[float64]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorIsNaNFloat64(want, buf)
+	goVectorIsNaN(got, buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorIsNaNFloat64(b *testing.B) {
+	if !hasAVX2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[float64]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorIsNaNFloat64(dst, buf)
+	}
+}
+func BenchmarkGoVectorIsNaNFloat64(b *testing.B) {
+	buf := randomBuffer[float64]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorIsNaN(dst, buf)
+	}
+}
