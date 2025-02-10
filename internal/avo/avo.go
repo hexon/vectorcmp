@@ -23,6 +23,9 @@ var (
 	const_onezero            Mem
 	const_three_through_zero Mem
 	const_seven_through_zero Mem
+	const_drop_half          Mem
+	const_drop_threequarters Mem
+	const_drop_seveneight    Mem
 )
 
 var (
@@ -100,6 +103,15 @@ func main() {
 	for i := 0; 16 > i; i += 8 {
 		DATA(i, U64(0x0706050403020100))
 	}
+	const_drop_half = GLOBL("const_drop_half", RODATA|NOPTR)
+	DATA(0, U64(0x0e0c0a0806040200))
+	DATA(8, U64(0xffffffffffffffff))
+	const_drop_threequarters = GLOBL("const_drop_threequarters", RODATA|NOPTR)
+	DATA(0, U64(0xffffffff0c080400))
+	DATA(8, U64(0xffffffffffffffff))
+	const_drop_seveneight = GLOBL("const_drop_seveneight", RODATA|NOPTR)
+	DATA(0, U64(0xffffffffffff0800))
+	DATA(8, U64(0xffffffffffffffff))
 
 	ConstraintExpr("!purego")
 
@@ -166,10 +178,7 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 		testB = ""
 	}
 	fmt.Fprintf(dispatcherBoth, "func Vector%s%s%d(dstMask []byte, %srows []%s) {\n", cmpOp, infix, width, defB, isfp.GoType(width))
-	if width > 8 {
-		fmt.Fprintf(&dispatcherAmd64, "	if hasBMI2() {\n")
-	}
-	fmt.Fprintf(&dispatcherAmd64, "	if hasAVX2() && len(rows) >= %d {\n", 256*rounds/width)
+	fmt.Fprintf(&dispatcherAmd64, "	if hasAVX2AndBMI2() && len(rows) >= %d {\n", 256*rounds/width)
 	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%s(dstMask, %srows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), useB, 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 256*rounds/width-1)
@@ -178,9 +187,6 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "	}\n")
-	if width > 8 {
-		fmt.Fprintf(&dispatcherAmd64, "	}\n")
-	}
 	fmt.Fprintf(dispatcherBoth, "	goVector%s(dstMask, %srows)\n", cmpOp, useB)
 	fmt.Fprintf(dispatcherBoth, "}\n")
 
@@ -200,7 +206,7 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	fmt.Fprintf(&generatedTest, "}\n")
 
 	fmt.Fprintf(&generatedTest, "func BenchmarkAsmVector%s%s%d(b *testing.B) {\n", cmpOp, infix, width)
-	fmt.Fprintf(&generatedTest, "	if !hasAVX2() && !hasAVX() {\n")
+	fmt.Fprintf(&generatedTest, "	if !hasAVX2AndBMI2() && !hasAVX() {\n")
 	fmt.Fprintf(&generatedTest, "		b.Skip(\"Both AVX and AVX2 are unavailable\")\n")
 	fmt.Fprintf(&generatedTest, "	}\n")
 	fmt.Fprintf(&generatedTest, "	buf := randomBuffer[%s]()\n", isfp.GoType(width))
@@ -222,6 +228,7 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 }
 
 func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, rounds int) {
+	useBMI2 := avxLevel == AVX2
 	defB := fmt.Sprintf("b %s, ", isfp.GoType(width))
 	if cmpOp == IsNaN {
 		defB = ""
@@ -293,17 +300,19 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 	}
 
 	mask := GP32()
-	switch width {
-	case 8:
-	case 16:
-		Comment("Load the mask 01010101... which we will use with PEXT to drop half the bits")
-		MOVL(constants.Offset(0), mask)
-	case 32:
-		Comment("Load the mask 00010001... which we will use with PEXT to drop 75% of the bits")
-		MOVL(constants.Offset(4), mask)
-	case 64:
-		Comment("Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits")
-		MOVL(constants.Offset(8), mask)
+	if useBMI2 {
+		switch width {
+		case 8:
+		case 16:
+			Comment("Load the mask 01010101... which we will use with PEXT to drop half the bits")
+			MOVL(constants.Offset(0), mask)
+		case 32:
+			Comment("Load the mask 00010001... which we will use with PEXT to drop 75% of the bits")
+			MOVL(constants.Offset(4), mask)
+		case 64:
+			Comment("Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits")
+			MOVL(constants.Offset(8), mask)
+		}
 	}
 
 	Label("loop")
@@ -374,26 +383,46 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		}
 		instr(args...)
 	}
+	if !useBMI2 && width != 8 {
+		var mask Mem
+		switch width {
+		case 16:
+			Comment("Drop every second byte from these registers")
+			mask = const_drop_half
+		case 32:
+			Comment("Drop every second-fourth byte from these registers")
+			mask = const_drop_threequarters
+		case 64:
+			Comment("Drop every second-seventh byte from these registers")
+			mask = const_drop_seveneight
+		}
+		for i := 0; i < rounds; i++ {
+			VPSHUFB(mask.Offset(0), ymms[i], ymms[i])
+		}
+	}
 	Comment("Take one bit of each byte and pack it into an R32")
 	for i := 0; i < rounds; i++ {
 		VPMOVMSKB(ymms[i], intermediates[i])
 	}
-	switch width {
-	case 8:
-	case 16:
-		Comment("Drop every second bit from these registers")
-		for i := 0; i < rounds; i++ {
-			PEXTL(mask, intermediates[i], intermediates[i])
-		}
-	case 32:
-		Comment("Drop every second-fourth bit from these registers")
-		for i := 0; i < rounds; i++ {
-			PEXTL(mask, intermediates[i], intermediates[i])
-		}
-	case 64:
-		Comment("Drop every second-seventh bit from these registers")
-		for i := 0; i < rounds; i++ {
-			PEXTL(mask, intermediates[i], intermediates[i])
+	if useBMI2 {
+		switch width {
+		case 8:
+		case 16:
+			Comment("Drop every second bit from these registers")
+			for i := 0; i < rounds; i++ {
+				// TODO: We could avoid the PEXTL (which requires BMI2) with a VPSHUFB to first drop every second byte before calling VPMOVMSKB.
+				PEXTL(mask, intermediates[i], intermediates[i])
+			}
+		case 32:
+			Comment("Drop every second-fourth bit from these registers")
+			for i := 0; i < rounds; i++ {
+				PEXTL(mask, intermediates[i], intermediates[i])
+			}
+		case 64:
+			Comment("Drop every second-seventh bit from these registers")
+			for i := 0; i < rounds; i++ {
+				PEXTL(mask, intermediates[i], intermediates[i])
+			}
 		}
 	}
 	resultBits := avxLevel.Bits() / width

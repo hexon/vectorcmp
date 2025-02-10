@@ -6,10 +6,6 @@ func hasAVX() bool {
 	return false
 }
 
-func hasAVX2() bool {
-	return false
-}
-
-func hasBMI2() bool {
+func hasAVX2AndBMI2() bool {
 	return false
 }

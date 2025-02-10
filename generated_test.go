@@ -18,7 +18,7 @@ func TestVectorEquals8(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorEquals8(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint8]()
@@ -48,7 +48,7 @@ func TestVectorGreaterThan8(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterThan8(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint8]()
@@ -78,7 +78,7 @@ func TestVectorLessThan8(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLessThan8(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint8]()
@@ -108,7 +108,7 @@ func TestVectorGreaterEquals8(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterEquals8(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint8]()
@@ -138,7 +138,7 @@ func TestVectorLesserEquals8(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLesserEquals8(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint8]()
@@ -168,7 +168,7 @@ func TestVectorEquals16(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorEquals16(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint16]()
@@ -198,7 +198,7 @@ func TestVectorGreaterThan16(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterThan16(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint16]()
@@ -228,7 +228,7 @@ func TestVectorLessThan16(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLessThan16(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint16]()
@@ -258,7 +258,7 @@ func TestVectorGreaterEquals16(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterEquals16(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint16]()
@@ -288,7 +288,7 @@ func TestVectorLesserEquals16(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLesserEquals16(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint16]()
@@ -318,7 +318,7 @@ func TestVectorEquals32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorEquals32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint32]()
@@ -348,7 +348,7 @@ func TestVectorEqualsFloat32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorEqualsFloat32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float32]()
@@ -378,7 +378,7 @@ func TestVectorGreaterThan32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterThan32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint32]()
@@ -408,7 +408,7 @@ func TestVectorGreaterThanFloat32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterThanFloat32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float32]()
@@ -438,7 +438,7 @@ func TestVectorLessThan32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLessThan32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint32]()
@@ -468,7 +468,7 @@ func TestVectorLessThanFloat32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLessThanFloat32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float32]()
@@ -498,7 +498,7 @@ func TestVectorGreaterEquals32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterEquals32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint32]()
@@ -528,7 +528,7 @@ func TestVectorGreaterEqualsFloat32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterEqualsFloat32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float32]()
@@ -558,7 +558,7 @@ func TestVectorLesserEquals32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLesserEquals32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint32]()
@@ -588,7 +588,7 @@ func TestVectorLesserEqualsFloat32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLesserEqualsFloat32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float32]()
@@ -618,7 +618,7 @@ func TestVectorEquals64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorEquals64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint64]()
@@ -648,7 +648,7 @@ func TestVectorEqualsFloat64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorEqualsFloat64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float64]()
@@ -678,7 +678,7 @@ func TestVectorGreaterThan64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterThan64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint64]()
@@ -708,7 +708,7 @@ func TestVectorGreaterThanFloat64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterThanFloat64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float64]()
@@ -738,7 +738,7 @@ func TestVectorLessThan64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLessThan64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint64]()
@@ -768,7 +768,7 @@ func TestVectorLessThanFloat64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLessThanFloat64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float64]()
@@ -798,7 +798,7 @@ func TestVectorGreaterEquals64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterEquals64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint64]()
@@ -828,7 +828,7 @@ func TestVectorGreaterEqualsFloat64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorGreaterEqualsFloat64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float64]()
@@ -858,7 +858,7 @@ func TestVectorLesserEquals64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLesserEquals64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[uint64]()
@@ -888,7 +888,7 @@ func TestVectorLesserEqualsFloat64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorLesserEqualsFloat64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float64]()
@@ -918,7 +918,7 @@ func TestVectorIsNaNFloat32(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorIsNaNFloat32(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float32]()
@@ -948,7 +948,7 @@ func TestVectorIsNaNFloat64(t *testing.T) {
 	}
 }
 func BenchmarkAsmVectorIsNaNFloat64(b *testing.B) {
-	if !hasAVX2() && !hasAVX() {
+	if !hasAVX2AndBMI2() && !hasAVX() {
 		b.Skip("Both AVX and AVX2 are unavailable")
 	}
 	buf := randomBuffer[float64]()

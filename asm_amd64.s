@@ -31,6 +31,18 @@ DATA const_seven_through_zero<>+0(SB)/8, $0x0706050403020100
 DATA const_seven_through_zero<>+8(SB)/8, $0x0706050403020100
 GLOBL const_seven_through_zero<>(SB), RODATA|NOPTR, $16
 
+DATA const_drop_half<>+0(SB)/8, $0x0e0c0a0806040200
+DATA const_drop_half<>+8(SB)/8, $0xffffffffffffffff
+GLOBL const_drop_half<>(SB), RODATA|NOPTR, $16
+
+DATA const_drop_threequarters<>+0(SB)/8, $0xffffffff0c080400
+DATA const_drop_threequarters<>+8(SB)/8, $0xffffffffffffffff
+GLOBL const_drop_threequarters<>(SB), RODATA|NOPTR, $16
+
+DATA const_drop_seveneight<>+0(SB)/8, $0xffffffffffff0800
+DATA const_drop_seveneight<>+8(SB)/8, $0xffffffffffffffff
+GLOBL const_drop_seveneight<>(SB), RODATA|NOPTR, $16
+
 // func asmAVX2EqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
 TEXT ·asmAVX2EqualsUint8(SB), NOSPLIT, $0-56
@@ -472,7 +484,7 @@ loop:
 	RET
 
 // func asmAVXEqualsUint16(dstMask []byte, b uint16, rows []uint16)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -483,9 +495,6 @@ TEXT ·asmAVXEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
-	// Load the mask 01010101... which we will use with PEXT to drop half the bits
-	MOVL constants<>+0(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -495,13 +504,13 @@ loop:
 	VPCMPEQW X1, X0, X1
 	VPCMPEQW X2, X0, X2
 
+	// Drop every second byte from these registers
+	VPSHUFB const_drop_half<>+0(SB), X1, X1
+	VPSHUFB const_drop_half<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Write the registers to dstMask
 	MOVB BL, (AX)
@@ -562,7 +571,7 @@ loop:
 	RET
 
 // func asmAVXGreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterThanUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -573,9 +582,6 @@ TEXT ·asmAVXGreaterThanUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
-	// Load the mask 01010101... which we will use with PEXT to drop half the bits
-	MOVL constants<>+0(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -585,13 +591,13 @@ loop:
 	VPCMPGTW X1, X0, X1
 	VPCMPGTW X2, X0, X2
 
+	// Drop every second byte from these registers
+	VPSHUFB const_drop_half<>+0(SB), X1, X1
+	VPSHUFB const_drop_half<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Write the registers to dstMask
 	MOVB BL, (AX)
@@ -652,7 +658,7 @@ loop:
 	RET
 
 // func asmAVXLessThanUint16(dstMask []byte, b uint16, rows []uint16)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLessThanUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -663,9 +669,6 @@ TEXT ·asmAVXLessThanUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
-	// Load the mask 01010101... which we will use with PEXT to drop half the bits
-	MOVL constants<>+0(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -675,13 +678,13 @@ loop:
 	VPCMPGTW X0, X1, X1
 	VPCMPGTW X0, X2, X2
 
+	// Drop every second byte from these registers
+	VPSHUFB const_drop_half<>+0(SB), X1, X1
+	VPSHUFB const_drop_half<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Write the registers to dstMask
 	MOVB BL, (AX)
@@ -746,7 +749,7 @@ loop:
 	RET
 
 // func asmAVXGreaterEqualsUint16(dstMask []byte, b uint16, rows []uint16)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -757,9 +760,6 @@ TEXT ·asmAVXGreaterEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
-	// Load the mask 01010101... which we will use with PEXT to drop half the bits
-	MOVL constants<>+0(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -769,13 +769,13 @@ loop:
 	VPCMPGTW X0, X1, X1
 	VPCMPGTW X0, X2, X2
 
+	// Drop every second byte from these registers
+	VPSHUFB const_drop_half<>+0(SB), X1, X1
+	VPSHUFB const_drop_half<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
 	NOTB BL
@@ -844,7 +844,7 @@ loop:
 	RET
 
 // func asmAVXLesserEqualsUint16(dstMask []byte, b uint16, rows []uint16)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLesserEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -855,9 +855,6 @@ TEXT ·asmAVXLesserEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
-	// Load the mask 01010101... which we will use with PEXT to drop half the bits
-	MOVL constants<>+0(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -867,13 +864,13 @@ loop:
 	VPCMPGTW X1, X0, X1
 	VPCMPGTW X2, X0, X2
 
+	// Drop every second byte from these registers
+	VPSHUFB const_drop_half<>+0(SB), X1, X1
+	VPSHUFB const_drop_half<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
 	NOTB BL
@@ -938,7 +935,7 @@ loop:
 	RET
 
 // func asmAVXEqualsUint32(dstMask []byte, b uint32, rows []uint32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -949,9 +946,6 @@ TEXT ·asmAVXEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -961,13 +955,13 @@ loop:
 	VPCMPEQD X1, X0, X1
 	VPCMPEQD X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1029,7 +1023,7 @@ loop:
 	RET
 
 // func asmAVXEqualsFloat32(dstMask []byte, b float32, rows []float32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1040,9 +1034,6 @@ TEXT ·asmAVXEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1052,13 +1043,13 @@ loop:
 	VCMPPS $0x00, X1, X0, X1
 	VCMPPS $0x00, X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1120,7 +1111,7 @@ loop:
 	RET
 
 // func asmAVXGreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterThanUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1131,9 +1122,6 @@ TEXT ·asmAVXGreaterThanUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1143,13 +1131,13 @@ loop:
 	VPCMPGTD X1, X0, X1
 	VPCMPGTD X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1211,7 +1199,7 @@ loop:
 	RET
 
 // func asmAVXGreaterThanFloat32(dstMask []byte, b float32, rows []float32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterThanFloat32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1222,9 +1210,6 @@ TEXT ·asmAVXGreaterThanFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1234,13 +1219,13 @@ loop:
 	VCMPPS $0x1e, X1, X0, X1
 	VCMPPS $0x1e, X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1302,7 +1287,7 @@ loop:
 	RET
 
 // func asmAVXLessThanUint32(dstMask []byte, b uint32, rows []uint32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLessThanUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1313,9 +1298,6 @@ TEXT ·asmAVXLessThanUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1325,13 +1307,13 @@ loop:
 	VPCMPGTD X0, X1, X1
 	VPCMPGTD X0, X2, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1393,7 +1375,7 @@ loop:
 	RET
 
 // func asmAVXLessThanFloat32(dstMask []byte, b float32, rows []float32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLessThanFloat32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1404,9 +1386,6 @@ TEXT ·asmAVXLessThanFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1416,13 +1395,13 @@ loop:
 	VCMPPS $0x11, X1, X0, X1
 	VCMPPS $0x11, X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1488,7 +1467,7 @@ loop:
 	RET
 
 // func asmAVXGreaterEqualsUint32(dstMask []byte, b uint32, rows []uint32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1499,9 +1478,6 @@ TEXT ·asmAVXGreaterEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1511,13 +1487,13 @@ loop:
 	VPCMPGTD X0, X1, X1
 	VPCMPGTD X0, X2, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
 	// Each register contains 4 bits, so we first combine pairs before writing them back
@@ -1581,7 +1557,7 @@ loop:
 	RET
 
 // func asmAVXGreaterEqualsFloat32(dstMask []byte, b float32, rows []float32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1592,9 +1568,6 @@ TEXT ·asmAVXGreaterEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1604,13 +1577,13 @@ loop:
 	VCMPPS $0x1d, X1, X0, X1
 	VCMPPS $0x1d, X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1676,7 +1649,7 @@ loop:
 	RET
 
 // func asmAVXLesserEqualsUint32(dstMask []byte, b uint32, rows []uint32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLesserEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1687,9 +1660,6 @@ TEXT ·asmAVXLesserEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1699,13 +1669,13 @@ loop:
 	VPCMPGTD X1, X0, X1
 	VPCMPGTD X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
 	// Each register contains 4 bits, so we first combine pairs before writing them back
@@ -1769,7 +1739,7 @@ loop:
 	RET
 
 // func asmAVXLesserEqualsFloat32(dstMask []byte, b float32, rows []float32)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLesserEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1780,9 +1750,6 @@ TEXT ·asmAVXLesserEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
-
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1792,13 +1759,13 @@ loop:
 	VCMPPS $0x12, X1, X0, X1
 	VCMPPS $0x12, X2, X0, X2
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -1872,7 +1839,7 @@ loop:
 	RET
 
 // func asmAVXEqualsUint64(dstMask []byte, b uint64, rows []uint64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1881,9 +1848,6 @@ TEXT ·asmAVXEqualsUint64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -1898,17 +1862,17 @@ loop:
 	VPCMPEQQ X3, X0, X3
 	VPCMPEQQ X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -1986,7 +1950,7 @@ loop:
 	RET
 
 // func asmAVXEqualsFloat64(dstMask []byte, b float64, rows []float64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -1995,9 +1959,6 @@ TEXT ·asmAVXEqualsFloat64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2012,17 +1973,17 @@ loop:
 	VCMPPD $0x00, X3, X0, X3
 	VCMPPD $0x00, X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -2100,7 +2061,7 @@ loop:
 	RET
 
 // func asmAVXGreaterThanUint64(dstMask []byte, b uint64, rows []uint64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterThanUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2109,9 +2070,6 @@ TEXT ·asmAVXGreaterThanUint64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2126,17 +2084,17 @@ loop:
 	VPCMPGTQ X3, X0, X3
 	VPCMPGTQ X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -2214,7 +2172,7 @@ loop:
 	RET
 
 // func asmAVXGreaterThanFloat64(dstMask []byte, b float64, rows []float64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterThanFloat64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2223,9 +2181,6 @@ TEXT ·asmAVXGreaterThanFloat64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2240,17 +2195,17 @@ loop:
 	VCMPPD $0x1e, X3, X0, X3
 	VCMPPD $0x1e, X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -2328,7 +2283,7 @@ loop:
 	RET
 
 // func asmAVXLessThanUint64(dstMask []byte, b uint64, rows []uint64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLessThanUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2337,9 +2292,6 @@ TEXT ·asmAVXLessThanUint64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2354,17 +2306,17 @@ loop:
 	VPCMPGTQ X0, X3, X3
 	VPCMPGTQ X0, X4, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -2442,7 +2394,7 @@ loop:
 	RET
 
 // func asmAVXLessThanFloat64(dstMask []byte, b float64, rows []float64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLessThanFloat64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2451,9 +2403,6 @@ TEXT ·asmAVXLessThanFloat64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2468,17 +2417,17 @@ loop:
 	VCMPPD $0x11, X3, X0, X3
 	VCMPPD $0x11, X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -2559,7 +2508,7 @@ loop:
 	RET
 
 // func asmAVXGreaterEqualsUint64(dstMask []byte, b uint64, rows []uint64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2568,9 +2517,6 @@ TEXT ·asmAVXGreaterEqualsUint64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2585,17 +2531,17 @@ loop:
 	VPCMPGTQ X0, X3, X3
 	VPCMPGTQ X0, X4, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// To get GreaterEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
@@ -2675,7 +2621,7 @@ loop:
 	RET
 
 // func asmAVXGreaterEqualsFloat64(dstMask []byte, b float64, rows []float64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXGreaterEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2684,9 +2630,6 @@ TEXT ·asmAVXGreaterEqualsFloat64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2701,17 +2644,17 @@ loop:
 	VCMPPD $0x1d, X3, X0, X3
 	VCMPPD $0x1d, X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -2792,7 +2735,7 @@ loop:
 	RET
 
 // func asmAVXLesserEqualsUint64(dstMask []byte, b uint64, rows []uint64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLesserEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2801,9 +2744,6 @@ TEXT ·asmAVXLesserEqualsUint64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2818,17 +2758,17 @@ loop:
 	VPCMPGTQ X3, X0, X3
 	VPCMPGTQ X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// To get LesserEquals semantics, we flipped the arguments of VPCMPGT and now invert the result
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
@@ -2908,7 +2848,7 @@ loop:
 	RET
 
 // func asmAVXLesserEqualsFloat64(dstMask []byte, b float64, rows []float64)
-// Requires: AVX, BMI2, SSE2
+// Requires: AVX, SSE2
 TEXT ·asmAVXLesserEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+32(FP), CX
@@ -2917,9 +2857,6 @@ TEXT ·asmAVXLesserEqualsFloat64(SB), NOSPLIT, $0-56
 	// Read param b into XMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -2934,17 +2871,17 @@ loop:
 	VCMPPD $0x12, X3, X0, X3
 	VCMPPD $0x12, X4, X0, X4
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
 	VPMOVMSKB X2, SI
 	VPMOVMSKB X3, DI
 	VPMOVMSKB X4, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
@@ -3007,14 +2944,11 @@ loop:
 	RET
 
 // func asmAVXIsNaNFloat32(dstMask []byte, rows []float32)
-// Requires: AVX, BMI2
+// Requires: AVX
 TEXT ·asmAVXIsNaNFloat32(SB), NOSPLIT, $0-48
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+24(FP), CX
 	MOVQ rows_len+32(FP), DX
-
-	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
-	MOVL constants<>+4(SB), DI
 
 loop:
 	// Load 2 128-bit chunks into XMM registers
@@ -3025,13 +2959,13 @@ loop:
 	VCMPPS $0x04, X0, X0, X0
 	VCMPPS $0x04, X1, X1, X1
 
+	// Drop every second-fourth byte from these registers
+	VPSHUFB const_drop_threequarters<>+0(SB), X0, X0
+	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X0, BX
 	VPMOVMSKB X1, SI
-
-	// Drop every second-fourth bit from these registers
-	PEXTL DI, BX, BX
-	PEXTL DI, SI, SI
 
 	// Each register contains 4 bits, so we first combine pairs before writing them back
 	SHLB $0x04, SI
@@ -3102,14 +3036,11 @@ loop:
 	RET
 
 // func asmAVXIsNaNFloat64(dstMask []byte, rows []float64)
-// Requires: AVX, BMI2
+// Requires: AVX
 TEXT ·asmAVXIsNaNFloat64(SB), NOSPLIT, $0-48
 	MOVQ dstMask_base+0(FP), AX
 	MOVQ rows_base+24(FP), CX
 	MOVQ rows_len+32(FP), DX
-
-	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
-	MOVL constants<>+8(SB), R9
 
 loop:
 	// Load 4 128-bit chunks into XMM registers
@@ -3124,17 +3055,17 @@ loop:
 	VCMPPD $0x04, X2, X2, X2
 	VCMPPD $0x04, X3, X3, X3
 
+	// Drop every second-seventh byte from these registers
+	VPSHUFB const_drop_seveneight<>+0(SB), X0, X0
+	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
+	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
+	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X0, BX
 	VPMOVMSKB X1, SI
 	VPMOVMSKB X2, DI
 	VPMOVMSKB X3, R8
-
-	// Drop every second-seventh bit from these registers
-	PEXTL R9, BX, BX
-	PEXTL R9, SI, SI
-	PEXTL R9, DI, DI
-	PEXTL R9, R8, R8
 
 	// Each register contains 2 bits, so we first combine them back into bytes before writing them back
 	SHLB $0x02, SI
