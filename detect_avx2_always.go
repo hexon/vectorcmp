@@ -9,3 +9,7 @@ func hasAVX() bool {
 func hasAVX2() bool {
 	return true
 }
+
+func hasBMI2() bool {
+	return true
+}

@@ -11,3 +11,7 @@ func hasAVX() bool {
 func hasAVX2() bool {
 	return cpu.X86.HasAVX2
 }
+
+func hasBMI2() bool {
+	return cpu.X86.HasBMI2
+}
