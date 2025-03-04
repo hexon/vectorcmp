@@ -179,10 +179,12 @@ func fastFilter(width int, cmpOp CmpOp, isfp IsFloating) {
 	}
 	fmt.Fprintf(dispatcherBoth, "func Vector%s%s%d(dstMask []byte, %srows []%s) {\n", cmpOp, infix, width, defB, isfp.GoType(width))
 	fmt.Fprintf(&dispatcherAmd64, "	if hasAVX2AndBMI2() && len(rows) >= %d {\n", 256*rounds/width)
+	fmt.Fprintf(&dispatcherAmd64, "		boundsCheck(dstMask, rows)\n")
 	fmt.Fprintf(&dispatcherAmd64, "		asmAVX2%s%s(dstMask, %srows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), useB, 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 256*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "	} else if hasAVX() && len(rows) >= %d {\n", 128*rounds/width)
+	fmt.Fprintf(&dispatcherAmd64, "		boundsCheck(dstMask, rows)\n")
 	fmt.Fprintf(&dispatcherAmd64, "		asmAVX%s%s(dstMask, %srows[:len(rows) & ^%d])\n", cmpOp, isfp.GoName(width), useB, 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		dstMask = dstMask[(len(rows) & ^%d) / 8:]\n", 128*rounds/width-1)
 	fmt.Fprintf(&dispatcherAmd64, "		rows = rows[len(rows) & ^%d:]\n", 128*rounds/width-1)
