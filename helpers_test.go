@@ -1,5 +1,7 @@
 package vectorcmp
 
+// Test helpers
+
 import (
 	"math"
 	"math/rand"
@@ -10,14 +12,19 @@ func randomBuffer[T uint8 | uint16 | uint32 | uint64 | float32 | float64]() []T 
 	for i := range buf {
 		buf[i] = T('a' + rand.Intn(3))
 	}
-	switch buf := any(buf).(type) {
+	x := T(0)
+	switch b := any(buf).(type) {
 	case []float32:
 		for i := 0; 20 > i; i++ {
-			buf[rand.Intn(len(buf))] = float32(math.NaN())
+			b[rand.Intn(len(b))] = float32(math.NaN())
 		}
 	case []float64:
 		for i := 0; 20 > i; i++ {
-			buf[rand.Intn(len(buf))] = math.NaN()
+			b[rand.Intn(len(b))] = math.NaN()
+		}
+	default:
+		for i := 0; 20 > i; i++ {
+			buf[rand.Intn(len(buf))] = x - 1 // The maximum value this uint supports.
 		}
 	}
 	return buf

@@ -26,6 +26,7 @@ var (
 	const_drop_half          Mem
 	const_drop_threequarters Mem
 	const_drop_seveneight    Mem
+	const_high_bits_for_size = map[int]Mem{}
 )
 
 var (
@@ -113,6 +114,22 @@ func main() {
 	const_drop_seveneight = GLOBL("const_drop_seveneight", RODATA|NOPTR)
 	DATA(0, U64(0xffffffffffff0800))
 	DATA(8, U64(0xffffffffffffffff))
+	const_high_bits_for_size[8] = GLOBL("const_high_bits_for_size_8", RODATA|NOPTR)
+	for i := 0; 32 > i; i += 8 {
+		DATA(i, U64(0x8080808080808080))
+	}
+	const_high_bits_for_size[16] = GLOBL("const_high_bits_for_size_16", RODATA|NOPTR)
+	for i := 0; 32 > i; i += 8 {
+		DATA(i, U64(0x8000800080008000))
+	}
+	const_high_bits_for_size[32] = GLOBL("const_high_bits_for_size_32", RODATA|NOPTR)
+	for i := 0; 32 > i; i += 8 {
+		DATA(i, U64(0x8000000080000000))
+	}
+	const_high_bits_for_size[64] = GLOBL("const_high_bits_for_size_64", RODATA|NOPTR)
+	for i := 0; 32 > i; i += 8 {
+		DATA(i, U64(0x8000000000000000))
+	}
 
 	ConstraintExpr("!purego")
 
@@ -262,6 +279,8 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		intermediates = append(intermediates, GP32())
 	}
 
+	useHackForUnsigned := !isfp && cmpOp != Equals && cmpOp != NotEquals
+
 	if cmpOp != IsNaN {
 		Commentf("Read param b into %s register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}", vecRegName)
 		b, err := Param("b").Resolve()
@@ -300,6 +319,11 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 				VPSHUFB(const_seven_through_zero.Offset(0), bRepeated, bRepeated)
 			}
 		}
+
+		if useHackForUnsigned {
+			Comment("Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions")
+			VPXOR(const_high_bits_for_size[width], bRepeated, bRepeated)
+		}
 	}
 
 	mask := GP32()
@@ -323,6 +347,13 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 	Commentf("Load %d %d-bit chunks into %s registers", rounds, avxLevel.Bits(), vecRegName)
 	for i := 0; i < rounds; i++ {
 		VMOVDQU(Mem{Base: rows, Disp: avxLevel.Bits() / 8 * i}, ymms[i])
+	}
+
+	if useHackForUnsigned {
+		Comment("Also flip the high-bit of the data")
+		for i := 0; i < rounds; i++ {
+			VPXOR(const_high_bits_for_size[width], ymms[i], ymms[i])
+		}
 	}
 	Commentf("Compare all values in each %s register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)", vecRegName)
 	var compareAgainst operand.Op = bRepeated

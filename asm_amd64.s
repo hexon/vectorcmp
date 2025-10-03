@@ -43,6 +43,30 @@ DATA const_drop_seveneight<>+0(SB)/8, $0xffffffffffff0800
 DATA const_drop_seveneight<>+8(SB)/8, $0xffffffffffffffff
 GLOBL const_drop_seveneight<>(SB), RODATA|NOPTR, $16
 
+DATA const_high_bits_for_size_8<>+0(SB)/8, $0x8080808080808080
+DATA const_high_bits_for_size_8<>+8(SB)/8, $0x8080808080808080
+DATA const_high_bits_for_size_8<>+16(SB)/8, $0x8080808080808080
+DATA const_high_bits_for_size_8<>+24(SB)/8, $0x8080808080808080
+GLOBL const_high_bits_for_size_8<>(SB), RODATA|NOPTR, $32
+
+DATA const_high_bits_for_size_16<>+0(SB)/8, $0x8000800080008000
+DATA const_high_bits_for_size_16<>+8(SB)/8, $0x8000800080008000
+DATA const_high_bits_for_size_16<>+16(SB)/8, $0x8000800080008000
+DATA const_high_bits_for_size_16<>+24(SB)/8, $0x8000800080008000
+GLOBL const_high_bits_for_size_16<>(SB), RODATA|NOPTR, $32
+
+DATA const_high_bits_for_size_32<>+0(SB)/8, $0x8000000080000000
+DATA const_high_bits_for_size_32<>+8(SB)/8, $0x8000000080000000
+DATA const_high_bits_for_size_32<>+16(SB)/8, $0x8000000080000000
+DATA const_high_bits_for_size_32<>+24(SB)/8, $0x8000000080000000
+GLOBL const_high_bits_for_size_32<>(SB), RODATA|NOPTR, $32
+
+DATA const_high_bits_for_size_64<>+0(SB)/8, $0x8000000000000000
+DATA const_high_bits_for_size_64<>+8(SB)/8, $0x8000000000000000
+DATA const_high_bits_for_size_64<>+16(SB)/8, $0x8000000000000000
+DATA const_high_bits_for_size_64<>+24(SB)/8, $0x8000000000000000
+GLOBL const_high_bits_for_size_64<>(SB), RODATA|NOPTR, $32
+
 // func asmAVX2EqualsUint8(dstMask []byte, b uint8, rows []uint8)
 // Requires: AVX, AVX2
 TEXT ·asmAVX2EqualsUint8(SB), NOSPLIT, $0-56
@@ -213,10 +237,17 @@ TEXT ·asmAVX2GreaterThanUint8(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTB b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y0, Y0
+
 loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y1, Y0, Y1
@@ -252,10 +283,17 @@ TEXT ·asmAVXGreaterThanUint8(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_zeroes<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_8<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X1, X0, X1
@@ -289,10 +327,17 @@ TEXT ·asmAVX2LessThanUint8(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTB b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y0, Y0
+
 loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y0, Y1, Y1
@@ -328,10 +373,17 @@ TEXT ·asmAVXLessThanUint8(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_zeroes<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_8<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X0, X1, X1
@@ -365,10 +417,17 @@ TEXT ·asmAVX2GreaterEqualsUint8(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTB b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y0, Y0
+
 loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y0, Y1, Y1
@@ -408,10 +467,17 @@ TEXT ·asmAVXGreaterEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_zeroes<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_8<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X0, X1, X1
@@ -449,10 +515,17 @@ TEXT ·asmAVX2LesserEqualsUint8(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTB b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y0, Y0
+
 loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_8<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB Y1, Y0, Y1
@@ -492,10 +565,17 @@ TEXT ·asmAVXLesserEqualsUint8(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_zeroes<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_8<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_8<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_8<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTB X1, X0, X1
@@ -715,6 +795,9 @@ TEXT ·asmAVX2GreaterThanUint16(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTW b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y0, Y0
+
 	// Load the mask 01010101... which we will use with PEXT to drop half the bits
 	MOVL constants<>+0(SB), DI
 
@@ -722,6 +805,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y1, Y0, Y1
@@ -761,10 +848,17 @@ TEXT ·asmAVXGreaterThanUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_16<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X1, X0, X1
@@ -802,6 +896,9 @@ TEXT ·asmAVX2LessThanUint16(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTW b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y0, Y0
+
 	// Load the mask 01010101... which we will use with PEXT to drop half the bits
 	MOVL constants<>+0(SB), DI
 
@@ -809,6 +906,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y0, Y1, Y1
@@ -848,10 +949,17 @@ TEXT ·asmAVXLessThanUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_16<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X0, X1, X1
@@ -889,6 +997,9 @@ TEXT ·asmAVX2GreaterEqualsUint16(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTW b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y0, Y0
+
 	// Load the mask 01010101... which we will use with PEXT to drop half the bits
 	MOVL constants<>+0(SB), DI
 
@@ -896,6 +1007,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y0, Y1, Y1
@@ -939,10 +1054,17 @@ TEXT ·asmAVXGreaterEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_16<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X0, X1, X1
@@ -984,6 +1106,9 @@ TEXT ·asmAVX2LesserEqualsUint16(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTW b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y0, Y0
+
 	// Load the mask 01010101... which we will use with PEXT to drop half the bits
 	MOVL constants<>+0(SB), DI
 
@@ -991,6 +1116,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_16<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW Y1, Y0, Y1
@@ -1034,10 +1163,17 @@ TEXT ·asmAVXLesserEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_16<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_16<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_16<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTW X1, X0, X1
@@ -1437,6 +1573,9 @@ TEXT ·asmAVX2GreaterThanUint32(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTD b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y0, Y0
+
 	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
 	MOVL constants<>+4(SB), DI
 
@@ -1444,6 +1583,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y1, Y0, Y1
@@ -1483,10 +1626,17 @@ TEXT ·asmAVXGreaterThanUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_32<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X1, X0, X1
@@ -1613,6 +1763,9 @@ TEXT ·asmAVX2LessThanUint32(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTD b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y0, Y0
+
 	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
 	MOVL constants<>+4(SB), DI
 
@@ -1620,6 +1773,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y0, Y1, Y1
@@ -1659,10 +1816,17 @@ TEXT ·asmAVXLessThanUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_32<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X0, X1, X1
@@ -1789,6 +1953,9 @@ TEXT ·asmAVX2GreaterEqualsUint32(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTD b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y0, Y0
+
 	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
 	MOVL constants<>+4(SB), DI
 
@@ -1796,6 +1963,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y0, Y1, Y1
@@ -1839,10 +2010,17 @@ TEXT ·asmAVXGreaterEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_32<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X0, X1, X1
@@ -1971,6 +2149,9 @@ TEXT ·asmAVX2LesserEqualsUint32(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTD b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y0, Y0
+
 	// Load the mask 00010001... which we will use with PEXT to drop 75% of the bits
 	MOVL constants<>+4(SB), DI
 
@@ -1978,6 +2159,10 @@ loop:
 	// Load 2 256-bit chunks into YMM registers
 	VMOVDQU (CX), Y1
 	VMOVDQU 32(CX), Y2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_32<>+0(SB), Y2, Y2
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD Y1, Y0, Y1
@@ -2021,10 +2206,17 @@ TEXT ·asmAVXLesserEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_32<>+0(SB), X0, X0
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_32<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_32<>+0(SB), X2, X2
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTD X1, X0, X1
@@ -2602,6 +2794,9 @@ TEXT ·asmAVX2GreaterThanUint64(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTQ b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y0, Y0
+
 	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
 	MOVL constants<>+8(SB), R9
 
@@ -2611,6 +2806,12 @@ loop:
 	VMOVDQU 32(CX), Y2
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y2, Y2
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y3, Y3
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y4, Y4
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y1, Y0, Y1
@@ -2659,12 +2860,21 @@ TEXT ·asmAVXGreaterThanUint64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), X0, X0
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_64<>+0(SB), X2, X2
+	VPXOR const_high_bits_for_size_64<>+0(SB), X3, X3
+	VPXOR const_high_bits_for_size_64<>+0(SB), X4, X4
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X1, X0, X1
@@ -2824,6 +3034,9 @@ TEXT ·asmAVX2LessThanUint64(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTQ b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y0, Y0
+
 	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
 	MOVL constants<>+8(SB), R9
 
@@ -2833,6 +3046,12 @@ loop:
 	VMOVDQU 32(CX), Y2
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y2, Y2
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y3, Y3
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y4, Y4
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y0, Y1, Y1
@@ -2881,12 +3100,21 @@ TEXT ·asmAVXLessThanUint64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), X0, X0
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_64<>+0(SB), X2, X2
+	VPXOR const_high_bits_for_size_64<>+0(SB), X3, X3
+	VPXOR const_high_bits_for_size_64<>+0(SB), X4, X4
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X0, X1, X1
@@ -3046,6 +3274,9 @@ TEXT ·asmAVX2GreaterEqualsUint64(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTQ b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y0, Y0
+
 	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
 	MOVL constants<>+8(SB), R9
 
@@ -3055,6 +3286,12 @@ loop:
 	VMOVDQU 32(CX), Y2
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y2, Y2
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y3, Y3
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y4, Y4
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y0, Y1, Y1
@@ -3106,12 +3343,21 @@ TEXT ·asmAVXGreaterEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), X0, X0
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_64<>+0(SB), X2, X2
+	VPXOR const_high_bits_for_size_64<>+0(SB), X3, X3
+	VPXOR const_high_bits_for_size_64<>+0(SB), X4, X4
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X0, X1, X1
@@ -3273,6 +3519,9 @@ TEXT ·asmAVX2LesserEqualsUint64(SB), NOSPLIT, $0-56
 	// Read param b into YMM register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}
 	VPBROADCASTQ b+24(FP), Y0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y0, Y0
+
 	// Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits
 	MOVL constants<>+8(SB), R9
 
@@ -3282,6 +3531,12 @@ loop:
 	VMOVDQU 32(CX), Y2
 	VMOVDQU 64(CX), Y3
 	VMOVDQU 96(CX), Y4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y1, Y1
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y2, Y2
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y3, Y3
+	VPXOR const_high_bits_for_size_64<>+0(SB), Y4, Y4
 
 	// Compare all values in each YMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ Y1, Y0, Y1
@@ -3333,12 +3588,21 @@ TEXT ·asmAVXLesserEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions
+	VPXOR const_high_bits_for_size_64<>+0(SB), X0, X0
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
 	VMOVDQU 16(CX), X2
 	VMOVDQU 32(CX), X3
 	VMOVDQU 48(CX), X4
+
+	// Also flip the high-bit of the data
+	VPXOR const_high_bits_for_size_64<>+0(SB), X1, X1
+	VPXOR const_high_bits_for_size_64<>+0(SB), X2, X2
+	VPXOR const_high_bits_for_size_64<>+0(SB), X3, X3
+	VPXOR const_high_bits_for_size_64<>+0(SB), X4, X4
 
 	// Compare all values in each XMM register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)
 	VPCMPGTQ X1, X0, X1
