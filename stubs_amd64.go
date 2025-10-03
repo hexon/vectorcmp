@@ -11,6 +11,12 @@ func asmAVX2EqualsUint8(dstMask []byte, b uint8, rows []uint8)
 func asmAVXEqualsUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
+func asmAVX2NotEqualsUint8(dstMask []byte, b uint8, rows []uint8)
+
+//go:noescape
+func asmAVXNotEqualsUint8(dstMask []byte, b uint8, rows []uint8)
+
+//go:noescape
 func asmAVX2GreaterThanUint8(dstMask []byte, b uint8, rows []uint8)
 
 //go:noescape
@@ -39,6 +45,12 @@ func asmAVX2EqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
 func asmAVXEqualsUint16(dstMask []byte, b uint16, rows []uint16)
+
+//go:noescape
+func asmAVX2NotEqualsUint16(dstMask []byte, b uint16, rows []uint16)
+
+//go:noescape
+func asmAVXNotEqualsUint16(dstMask []byte, b uint16, rows []uint16)
 
 //go:noescape
 func asmAVX2GreaterThanUint16(dstMask []byte, b uint16, rows []uint16)
@@ -75,6 +87,18 @@ func asmAVX2EqualsFloat32(dstMask []byte, b float32, rows []float32)
 
 //go:noescape
 func asmAVXEqualsFloat32(dstMask []byte, b float32, rows []float32)
+
+//go:noescape
+func asmAVX2NotEqualsUint32(dstMask []byte, b uint32, rows []uint32)
+
+//go:noescape
+func asmAVXNotEqualsUint32(dstMask []byte, b uint32, rows []uint32)
+
+//go:noescape
+func asmAVX2NotEqualsFloat32(dstMask []byte, b float32, rows []float32)
+
+//go:noescape
+func asmAVXNotEqualsFloat32(dstMask []byte, b float32, rows []float32)
 
 //go:noescape
 func asmAVX2GreaterThanUint32(dstMask []byte, b uint32, rows []uint32)
@@ -135,6 +159,18 @@ func asmAVX2EqualsFloat64(dstMask []byte, b float64, rows []float64)
 
 //go:noescape
 func asmAVXEqualsFloat64(dstMask []byte, b float64, rows []float64)
+
+//go:noescape
+func asmAVX2NotEqualsUint64(dstMask []byte, b uint64, rows []uint64)
+
+//go:noescape
+func asmAVXNotEqualsUint64(dstMask []byte, b uint64, rows []uint64)
+
+//go:noescape
+func asmAVX2NotEqualsFloat64(dstMask []byte, b float64, rows []float64)
+
+//go:noescape
+func asmAVXNotEqualsFloat64(dstMask []byte, b float64, rows []float64)
 
 //go:noescape
 func asmAVX2GreaterThanUint64(dstMask []byte, b uint64, rows []uint64)

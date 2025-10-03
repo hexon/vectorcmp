@@ -10,6 +10,16 @@ func goVectorEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst 
 	}
 }
 
+func goVectorNotEquals[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
+	boundsCheck(dst, rows)
+	zero(dst)
+	for i, v := range rows {
+		if search != v {
+			dst[i/8] |= 1 << (i % 8)
+		}
+	}
+}
+
 func goVectorGreaterThan[T uint8 | uint16 | uint32 | uint64 | float32 | float64](dst []byte, search T, rows []T) {
 	boundsCheck(dst, rows)
 	zero(dst)

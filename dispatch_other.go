@@ -7,6 +7,9 @@ package vectorcmp
 func VectorEquals8(dstMask []byte, b uint8, rows []uint8) {
 	goVectorEquals(dstMask, b, rows)
 }
+func VectorNotEquals8(dstMask []byte, b uint8, rows []uint8) {
+	goVectorNotEquals(dstMask, b, rows)
+}
 func VectorGreaterThan8(dstMask []byte, b uint8, rows []uint8) {
 	goVectorGreaterThan(dstMask, b, rows)
 }
@@ -21,6 +24,9 @@ func VectorLesserEquals8(dstMask []byte, b uint8, rows []uint8) {
 }
 func VectorEquals16(dstMask []byte, b uint16, rows []uint16) {
 	goVectorEquals(dstMask, b, rows)
+}
+func VectorNotEquals16(dstMask []byte, b uint16, rows []uint16) {
+	goVectorNotEquals(dstMask, b, rows)
 }
 func VectorGreaterThan16(dstMask []byte, b uint16, rows []uint16) {
 	goVectorGreaterThan(dstMask, b, rows)
@@ -39,6 +45,12 @@ func VectorEquals32(dstMask []byte, b uint32, rows []uint32) {
 }
 func VectorEqualsFloat32(dstMask []byte, b float32, rows []float32) {
 	goVectorEquals(dstMask, b, rows)
+}
+func VectorNotEquals32(dstMask []byte, b uint32, rows []uint32) {
+	goVectorNotEquals(dstMask, b, rows)
+}
+func VectorNotEqualsFloat32(dstMask []byte, b float32, rows []float32) {
+	goVectorNotEquals(dstMask, b, rows)
 }
 func VectorGreaterThan32(dstMask []byte, b uint32, rows []uint32) {
 	goVectorGreaterThan(dstMask, b, rows)
@@ -69,6 +81,12 @@ func VectorEquals64(dstMask []byte, b uint64, rows []uint64) {
 }
 func VectorEqualsFloat64(dstMask []byte, b float64, rows []float64) {
 	goVectorEquals(dstMask, b, rows)
+}
+func VectorNotEquals64(dstMask []byte, b uint64, rows []uint64) {
+	goVectorNotEquals(dstMask, b, rows)
+}
+func VectorNotEqualsFloat64(dstMask []byte, b float64, rows []float64) {
+	goVectorNotEquals(dstMask, b, rows)
 }
 func VectorGreaterThan64(dstMask []byte, b uint64, rows []uint64) {
 	goVectorGreaterThan(dstMask, b, rows)

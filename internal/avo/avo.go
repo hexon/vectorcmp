@@ -43,6 +43,7 @@ type CmpOp string
 
 var (
 	Equals        CmpOp = "Equals"
+	NotEquals     CmpOp = "NotEquals"
 	GreaterThan   CmpOp = "GreaterThan"
 	LessThan      CmpOp = "LessThan"
 	GreaterEquals CmpOp = "GreaterEquals"
@@ -126,7 +127,7 @@ func main() {
 	io.WriteString(&generatedTest, "import \"bytes\"\n\n")
 
 	for _, w := range []int{8, 16, 32, 64} {
-		for _, o := range []CmpOp{Equals, GreaterThan, LessThan, GreaterEquals, LesserEquals} {
+		for _, o := range []CmpOp{Equals, NotEquals, GreaterThan, LessThan, GreaterEquals, LesserEquals} {
 			fastFilter(w, o, false)
 			if w >= 32 {
 				fastFilter(w, o, true)
@@ -331,6 +332,8 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 			switch cmpOp {
 			case Equals:
 				op = U8(0x00) // EQ_OQ: Equal (ordered, non-signaling)
+			case NotEquals:
+				op = U8(0x04) // NEQ_UQ: Not-equal (unordered, non-signaling)
 			case LessThan:
 				op = U8(0x11) // LT_OQ: Less-than (ordered, nonsignaling)
 			case LesserEquals:
@@ -353,25 +356,25 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		var instr func(ops ...Op)
 		switch width {
 		case 8:
-			if cmpOp == Equals {
+			if cmpOp == Equals || cmpOp == NotEquals {
 				instr = VPCMPEQB
 			} else {
 				instr = VPCMPGTB
 			}
 		case 16:
-			if cmpOp == Equals {
+			if cmpOp == Equals || cmpOp == NotEquals {
 				instr = VPCMPEQW
 			} else {
 				instr = VPCMPGTW
 			}
 		case 32:
-			if cmpOp == Equals {
+			if cmpOp == Equals || cmpOp == NotEquals {
 				instr = VPCMPEQD
 			} else {
 				instr = VPCMPGTD
 			}
 		case 64:
-			if cmpOp == Equals {
+			if cmpOp == Equals || cmpOp == NotEquals {
 				instr = VPCMPEQQ
 			} else {
 				instr = VPCMPGTQ
@@ -428,9 +431,13 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		}
 	}
 	resultBits := avxLevel.Bits() / width
-	implementedWithInversion := (cmpOp == GreaterEquals || cmpOp == LesserEquals) && !isfp
+	implementedWithInversion := (cmpOp == GreaterEquals || cmpOp == LesserEquals || cmpOp == NotEquals) && !isfp
 	if implementedWithInversion {
-		Commentf("To get %s semantics, we flipped the arguments of VPCMPGT and now invert the result", cmpOp)
+		if cmpOp == NotEquals {
+			Commentf("To get %s semantics we need to invert the result", cmpOp)
+		} else {
+			Commentf("To get %s semantics, we flipped the arguments of VPCMPGT and now invert the result", cmpOp)
+		}
 		for _, r := range intermediates {
 			switch resultBits {
 			case 32:

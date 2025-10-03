@@ -18,6 +18,20 @@ func VectorEquals8(dstMask []byte, b uint8, rows []uint8) {
 	}
 	goVectorEquals(dstMask, b, rows)
 }
+func VectorNotEquals8(dstMask []byte, b uint8, rows []uint8) {
+	if hasAVX2AndBMI2() && len(rows) >= 64 {
+		boundsCheck(dstMask, rows)
+		asmAVX2NotEqualsUint8(dstMask, b, rows[:len(rows) & ^63])
+		dstMask = dstMask[(len(rows) & ^63)/8:]
+		rows = rows[len(rows) & ^63:]
+	} else if hasAVX() && len(rows) >= 32 {
+		boundsCheck(dstMask, rows)
+		asmAVXNotEqualsUint8(dstMask, b, rows[:len(rows) & ^31])
+		dstMask = dstMask[(len(rows) & ^31)/8:]
+		rows = rows[len(rows) & ^31:]
+	}
+	goVectorNotEquals(dstMask, b, rows)
+}
 func VectorGreaterThan8(dstMask []byte, b uint8, rows []uint8) {
 	if hasAVX2AndBMI2() && len(rows) >= 64 {
 		boundsCheck(dstMask, rows)
@@ -87,6 +101,20 @@ func VectorEquals16(dstMask []byte, b uint16, rows []uint16) {
 		rows = rows[len(rows) & ^15:]
 	}
 	goVectorEquals(dstMask, b, rows)
+}
+func VectorNotEquals16(dstMask []byte, b uint16, rows []uint16) {
+	if hasAVX2AndBMI2() && len(rows) >= 32 {
+		boundsCheck(dstMask, rows)
+		asmAVX2NotEqualsUint16(dstMask, b, rows[:len(rows) & ^31])
+		dstMask = dstMask[(len(rows) & ^31)/8:]
+		rows = rows[len(rows) & ^31:]
+	} else if hasAVX() && len(rows) >= 16 {
+		boundsCheck(dstMask, rows)
+		asmAVXNotEqualsUint16(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	}
+	goVectorNotEquals(dstMask, b, rows)
 }
 func VectorGreaterThan16(dstMask []byte, b uint16, rows []uint16) {
 	if hasAVX2AndBMI2() && len(rows) >= 32 {
@@ -171,6 +199,34 @@ func VectorEqualsFloat32(dstMask []byte, b float32, rows []float32) {
 		rows = rows[len(rows) & ^7:]
 	}
 	goVectorEquals(dstMask, b, rows)
+}
+func VectorNotEquals32(dstMask []byte, b uint32, rows []uint32) {
+	if hasAVX2AndBMI2() && len(rows) >= 16 {
+		boundsCheck(dstMask, rows)
+		asmAVX2NotEqualsUint32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		boundsCheck(dstMask, rows)
+		asmAVXNotEqualsUint32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorNotEquals(dstMask, b, rows)
+}
+func VectorNotEqualsFloat32(dstMask []byte, b float32, rows []float32) {
+	if hasAVX2AndBMI2() && len(rows) >= 16 {
+		boundsCheck(dstMask, rows)
+		asmAVX2NotEqualsFloat32(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		boundsCheck(dstMask, rows)
+		asmAVXNotEqualsFloat32(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorNotEquals(dstMask, b, rows)
 }
 func VectorGreaterThan32(dstMask []byte, b uint32, rows []uint32) {
 	if hasAVX2AndBMI2() && len(rows) >= 16 {
@@ -311,6 +367,34 @@ func VectorEqualsFloat64(dstMask []byte, b float64, rows []float64) {
 		rows = rows[len(rows) & ^7:]
 	}
 	goVectorEquals(dstMask, b, rows)
+}
+func VectorNotEquals64(dstMask []byte, b uint64, rows []uint64) {
+	if hasAVX2AndBMI2() && len(rows) >= 16 {
+		boundsCheck(dstMask, rows)
+		asmAVX2NotEqualsUint64(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		boundsCheck(dstMask, rows)
+		asmAVXNotEqualsUint64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorNotEquals(dstMask, b, rows)
+}
+func VectorNotEqualsFloat64(dstMask []byte, b float64, rows []float64) {
+	if hasAVX2AndBMI2() && len(rows) >= 16 {
+		boundsCheck(dstMask, rows)
+		asmAVX2NotEqualsFloat64(dstMask, b, rows[:len(rows) & ^15])
+		dstMask = dstMask[(len(rows) & ^15)/8:]
+		rows = rows[len(rows) & ^15:]
+	} else if hasAVX() && len(rows) >= 8 {
+		boundsCheck(dstMask, rows)
+		asmAVXNotEqualsFloat64(dstMask, b, rows[:len(rows) & ^7])
+		dstMask = dstMask[(len(rows) & ^7)/8:]
+		rows = rows[len(rows) & ^7:]
+	}
+	goVectorNotEquals(dstMask, b, rows)
 }
 func VectorGreaterThan64(dstMask []byte, b uint64, rows []uint64) {
 	if hasAVX2AndBMI2() && len(rows) >= 16 {

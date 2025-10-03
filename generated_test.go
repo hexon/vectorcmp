@@ -36,6 +36,36 @@ func BenchmarkGoVectorEquals8(b *testing.B) {
 		goVectorEquals(dst, 'b', buf)
 	}
 }
+func TestVectorNotEquals8(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[uint8]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorNotEquals8(want, 'b', buf)
+	goVectorNotEquals(got, 'b', buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorNotEquals8(b *testing.B) {
+	if !hasAVX2AndBMI2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[uint8]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorNotEquals8(dst, 'b', buf)
+	}
+}
+func BenchmarkGoVectorNotEquals8(b *testing.B) {
+	buf := randomBuffer[uint8]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorNotEquals(dst, 'b', buf)
+	}
+}
 func TestVectorGreaterThan8(t *testing.T) {
 	t.Parallel()
 	buf := randomBuffer[uint8]()
@@ -184,6 +214,36 @@ func BenchmarkGoVectorEquals16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; b.N > i; i++ {
 		goVectorEquals(dst, 'b', buf)
+	}
+}
+func TestVectorNotEquals16(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[uint16]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorNotEquals16(want, 'b', buf)
+	goVectorNotEquals(got, 'b', buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorNotEquals16(b *testing.B) {
+	if !hasAVX2AndBMI2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[uint16]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorNotEquals16(dst, 'b', buf)
+	}
+}
+func BenchmarkGoVectorNotEquals16(b *testing.B) {
+	buf := randomBuffer[uint16]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorNotEquals(dst, 'b', buf)
 	}
 }
 func TestVectorGreaterThan16(t *testing.T) {
@@ -364,6 +424,66 @@ func BenchmarkGoVectorEqualsFloat32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; b.N > i; i++ {
 		goVectorEquals(dst, 'b', buf)
+	}
+}
+func TestVectorNotEquals32(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[uint32]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorNotEquals32(want, 'b', buf)
+	goVectorNotEquals(got, 'b', buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorNotEquals32(b *testing.B) {
+	if !hasAVX2AndBMI2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[uint32]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorNotEquals32(dst, 'b', buf)
+	}
+}
+func BenchmarkGoVectorNotEquals32(b *testing.B) {
+	buf := randomBuffer[uint32]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorNotEquals(dst, 'b', buf)
+	}
+}
+func TestVectorNotEqualsFloat32(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[float32]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorNotEqualsFloat32(want, 'b', buf)
+	goVectorNotEquals(got, 'b', buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorNotEqualsFloat32(b *testing.B) {
+	if !hasAVX2AndBMI2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[float32]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorNotEqualsFloat32(dst, 'b', buf)
+	}
+}
+func BenchmarkGoVectorNotEqualsFloat32(b *testing.B) {
+	buf := randomBuffer[float32]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorNotEquals(dst, 'b', buf)
 	}
 }
 func TestVectorGreaterThan32(t *testing.T) {
@@ -664,6 +784,66 @@ func BenchmarkGoVectorEqualsFloat64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; b.N > i; i++ {
 		goVectorEquals(dst, 'b', buf)
+	}
+}
+func TestVectorNotEquals64(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[uint64]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorNotEquals64(want, 'b', buf)
+	goVectorNotEquals(got, 'b', buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorNotEquals64(b *testing.B) {
+	if !hasAVX2AndBMI2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[uint64]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorNotEquals64(dst, 'b', buf)
+	}
+}
+func BenchmarkGoVectorNotEquals64(b *testing.B) {
+	buf := randomBuffer[uint64]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorNotEquals(dst, 'b', buf)
+	}
+}
+func TestVectorNotEqualsFloat64(t *testing.T) {
+	t.Parallel()
+	buf := randomBuffer[float64]()
+	got := destinationBuffer(buf)
+	want := destinationBuffer(buf)
+	VectorNotEqualsFloat64(want, 'b', buf)
+	goVectorNotEquals(got, 'b', buf)
+	if !bytes.Equal(want, got) {
+		t.Fatalf("ASM version returned a different result:\n%b\n%b", want, got)
+	}
+}
+func BenchmarkAsmVectorNotEqualsFloat64(b *testing.B) {
+	if !hasAVX2AndBMI2() && !hasAVX() {
+		b.Skip("Both AVX and AVX2 are unavailable")
+	}
+	buf := randomBuffer[float64]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		VectorNotEqualsFloat64(dst, 'b', buf)
+	}
+}
+func BenchmarkGoVectorNotEqualsFloat64(b *testing.B) {
+	buf := randomBuffer[float64]()
+	dst := destinationBuffer(buf)
+	b.ResetTimer()
+	for i := 0; b.N > i; i++ {
+		goVectorNotEquals(dst, 'b', buf)
 	}
 }
 func TestVectorGreaterThan64(t *testing.T) {
