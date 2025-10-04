@@ -280,6 +280,7 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 	}
 
 	useHackForUnsigned := !isfp && cmpOp != Equals && cmpOp != NotEquals
+	var high_bits_for_size Op
 
 	if cmpOp != IsNaN {
 		Commentf("Read param b into %s register. If b is 0x07, YMM becomes {0x07, 0x07, 0x07...}", vecRegName)
@@ -322,7 +323,9 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 
 		if useHackForUnsigned {
 			Comment("Flip the high-bit so we can make unsigned comparisons with the signed VPCMP instructions")
-			VPXOR(const_high_bits_for_size[width], bRepeated, bRepeated)
+			high_bits_for_size = createVectorRegister()
+			VMOVDQU(const_high_bits_for_size[width], high_bits_for_size)
+			VPXOR(high_bits_for_size, bRepeated, bRepeated)
 		}
 	}
 
@@ -352,7 +355,7 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 	if useHackForUnsigned {
 		Comment("Also flip the high-bit of the data")
 		for i := 0; i < rounds; i++ {
-			VPXOR(const_high_bits_for_size[width], ymms[i], ymms[i])
+			VPXOR(high_bits_for_size, ymms[i], ymms[i])
 		}
 	}
 	Commentf("Compare all values in each %s register to b. Each byte in the YMMs becomes 0x00 (mismatch) or 0xff (match)", vecRegName)
