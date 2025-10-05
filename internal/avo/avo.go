@@ -329,19 +329,33 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		}
 	}
 
-	mask := GP32()
+	var dropBits Op
 	if useBMI2 {
+		dropBits = GP32()
 		switch width {
 		case 8:
 		case 16:
 			Comment("Load the mask 01010101... which we will use with PEXT to drop half the bits")
-			MOVL(constants.Offset(0), mask)
+			MOVL(constants.Offset(0), dropBits)
 		case 32:
 			Comment("Load the mask 00010001... which we will use with PEXT to drop 75% of the bits")
-			MOVL(constants.Offset(4), mask)
+			MOVL(constants.Offset(4), dropBits)
 		case 64:
 			Comment("Load the mask 00000001... which we will use with PEXT to drop 7/8th of the bits")
-			MOVL(constants.Offset(8), mask)
+			MOVL(constants.Offset(8), dropBits)
+		}
+	} else {
+		dropBits = createVectorRegister()
+		switch width {
+		case 16:
+			Comment("Drop every second byte from these registers")
+			VMOVDQU(const_drop_half, dropBits)
+		case 32:
+			Comment("Drop every second-fourth byte from these registers")
+			VMOVDQU(const_drop_threequarters, dropBits)
+		case 64:
+			Comment("Drop every second-seventh byte from these registers")
+			VMOVDQU(const_drop_seveneight, dropBits)
 		}
 	}
 
@@ -423,20 +437,16 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 		instr(args...)
 	}
 	if !useBMI2 && width != 8 {
-		var mask Mem
 		switch width {
 		case 16:
 			Comment("Drop every second byte from these registers")
-			mask = const_drop_half
 		case 32:
 			Comment("Drop every second-fourth byte from these registers")
-			mask = const_drop_threequarters
 		case 64:
 			Comment("Drop every second-seventh byte from these registers")
-			mask = const_drop_seveneight
 		}
 		for i := 0; i < rounds; i++ {
-			VPSHUFB(mask.Offset(0), ymms[i], ymms[i])
+			VPSHUFB(dropBits, ymms[i], ymms[i])
 		}
 	}
 	Comment("Take one bit of each byte and pack it into an R32")
@@ -450,17 +460,17 @@ func fastFilterImpl(avxLevel AVXLevel, width int, cmpOp CmpOp, isfp IsFloating, 
 			Comment("Drop every second bit from these registers")
 			for i := 0; i < rounds; i++ {
 				// TODO: We could avoid the PEXTL (which requires BMI2) with a VPSHUFB to first drop every second byte before calling VPMOVMSKB.
-				PEXTL(mask, intermediates[i], intermediates[i])
+				PEXTL(dropBits, intermediates[i], intermediates[i])
 			}
 		case 32:
 			Comment("Drop every second-fourth bit from these registers")
 			for i := 0; i < rounds; i++ {
-				PEXTL(mask, intermediates[i], intermediates[i])
+				PEXTL(dropBits, intermediates[i], intermediates[i])
 			}
 		case 64:
 			Comment("Drop every second-seventh bit from these registers")
 			for i := 0; i < rounds; i++ {
-				PEXTL(mask, intermediates[i], intermediates[i])
+				PEXTL(dropBits, intermediates[i], intermediates[i])
 			}
 		}
 	}

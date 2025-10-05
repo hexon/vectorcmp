@@ -667,6 +667,9 @@ TEXT ·asmAVXEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
+	// Drop every second byte from these registers
+	VMOVDQU const_drop_half<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -677,8 +680,8 @@ loop:
 	VPCMPEQW X2, X0, X2
 
 	// Drop every second byte from these registers
-	VPSHUFB const_drop_half<>+0(SB), X1, X1
-	VPSHUFB const_drop_half<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -758,6 +761,9 @@ TEXT ·asmAVXNotEqualsUint16(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_onezero<>+0(SB), X0, X0
 
+	// Drop every second byte from these registers
+	VMOVDQU const_drop_half<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -768,8 +774,8 @@ loop:
 	VPCMPEQW X2, X0, X2
 
 	// Drop every second byte from these registers
-	VPSHUFB const_drop_half<>+0(SB), X1, X1
-	VPSHUFB const_drop_half<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -861,6 +867,9 @@ TEXT ·asmAVXGreaterThanUint16(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_16<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second byte from these registers
+	VMOVDQU const_drop_half<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -875,8 +884,8 @@ loop:
 	VPCMPGTW X2, X0, X2
 
 	// Drop every second byte from these registers
-	VPSHUFB const_drop_half<>+0(SB), X1, X1
-	VPSHUFB const_drop_half<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -964,6 +973,9 @@ TEXT ·asmAVXLessThanUint16(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_16<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second byte from these registers
+	VMOVDQU const_drop_half<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -978,8 +990,8 @@ loop:
 	VPCMPGTW X0, X2, X2
 
 	// Drop every second byte from these registers
-	VPSHUFB const_drop_half<>+0(SB), X1, X1
-	VPSHUFB const_drop_half<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1071,6 +1083,9 @@ TEXT ·asmAVXGreaterEqualsUint16(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_16<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second byte from these registers
+	VMOVDQU const_drop_half<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1085,8 +1100,8 @@ loop:
 	VPCMPGTW X0, X2, X2
 
 	// Drop every second byte from these registers
-	VPSHUFB const_drop_half<>+0(SB), X1, X1
-	VPSHUFB const_drop_half<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1182,6 +1197,9 @@ TEXT ·asmAVXLesserEqualsUint16(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_16<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second byte from these registers
+	VMOVDQU const_drop_half<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1196,8 +1214,8 @@ loop:
 	VPCMPGTW X2, X0, X2
 
 	// Drop every second byte from these registers
-	VPSHUFB const_drop_half<>+0(SB), X1, X1
-	VPSHUFB const_drop_half<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1277,6 +1295,9 @@ TEXT ·asmAVXEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1287,8 +1308,8 @@ loop:
 	VPCMPEQD X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1365,6 +1386,9 @@ TEXT ·asmAVXEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1375,8 +1399,8 @@ loop:
 	VCMPPS $0x00, X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1457,6 +1481,9 @@ TEXT ·asmAVXNotEqualsUint32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1467,8 +1494,8 @@ loop:
 	VPCMPEQD X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1547,6 +1574,9 @@ TEXT ·asmAVXNotEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1557,8 +1587,8 @@ loop:
 	VCMPPS $0x04, X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1647,6 +1677,9 @@ TEXT ·asmAVXGreaterThanUint32(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_32<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1661,8 +1694,8 @@ loop:
 	VPCMPGTD X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1739,6 +1772,9 @@ TEXT ·asmAVXGreaterThanFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1749,8 +1785,8 @@ loop:
 	VCMPPS $0x1e, X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1839,6 +1875,9 @@ TEXT ·asmAVXLessThanUint32(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_32<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1853,8 +1892,8 @@ loop:
 	VPCMPGTD X0, X2, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -1931,6 +1970,9 @@ TEXT ·asmAVXLessThanFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -1941,8 +1983,8 @@ loop:
 	VCMPPS $0x11, X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2035,6 +2077,9 @@ TEXT ·asmAVXGreaterEqualsUint32(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_32<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2049,8 +2094,8 @@ loop:
 	VPCMPGTD X0, X2, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2129,6 +2174,9 @@ TEXT ·asmAVXGreaterEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2139,8 +2187,8 @@ loop:
 	VCMPPS $0x1d, X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2233,6 +2281,9 @@ TEXT ·asmAVXLesserEqualsUint32(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_32<>+0(SB), X3
 	VPXOR   X3, X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X4
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2247,8 +2298,8 @@ loop:
 	VPCMPGTD X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2327,6 +2378,9 @@ TEXT ·asmAVXLesserEqualsFloat32(SB), NOSPLIT, $0-56
 	MOVQ    BX, X0
 	VPSHUFB const_three_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X3
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2337,8 +2391,8 @@ loop:
 	VCMPPS $0x12, X2, X0, X2
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
-	VPSHUFB const_drop_threequarters<>+0(SB), X2, X2
+	VPSHUFB X3, X1, X1
+	VPSHUFB X3, X2, X2
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2426,6 +2480,9 @@ TEXT ·asmAVXEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2440,10 +2497,10 @@ loop:
 	VPCMPEQQ X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2537,6 +2594,9 @@ TEXT ·asmAVXEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2551,10 +2611,10 @@ loop:
 	VCMPPD $0x00, X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2651,6 +2711,9 @@ TEXT ·asmAVXNotEqualsUint64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2665,10 +2728,10 @@ loop:
 	VPCMPEQQ X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2764,6 +2827,9 @@ TEXT ·asmAVXNotEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2778,10 +2844,10 @@ loop:
 	VCMPPD $0x04, X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -2889,6 +2955,9 @@ TEXT ·asmAVXGreaterThanUint64(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_64<>+0(SB), X5
 	VPXOR   X5, X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X6
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -2909,10 +2978,10 @@ loop:
 	VPCMPGTQ X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X6, X1, X1
+	VPSHUFB X6, X2, X2
+	VPSHUFB X6, X3, X3
+	VPSHUFB X6, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3006,6 +3075,9 @@ TEXT ·asmAVXGreaterThanFloat64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3020,10 +3092,10 @@ loop:
 	VCMPPD $0x1e, X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3131,6 +3203,9 @@ TEXT ·asmAVXLessThanUint64(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_64<>+0(SB), X5
 	VPXOR   X5, X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X6
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3151,10 +3226,10 @@ loop:
 	VPCMPGTQ X0, X4, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X6, X1, X1
+	VPSHUFB X6, X2, X2
+	VPSHUFB X6, X3, X3
+	VPSHUFB X6, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3248,6 +3323,9 @@ TEXT ·asmAVXLessThanFloat64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3262,10 +3340,10 @@ loop:
 	VCMPPD $0x11, X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3376,6 +3454,9 @@ TEXT ·asmAVXGreaterEqualsUint64(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_64<>+0(SB), X5
 	VPXOR   X5, X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X6
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3396,10 +3477,10 @@ loop:
 	VPCMPGTQ X0, X4, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X6, X1, X1
+	VPSHUFB X6, X2, X2
+	VPSHUFB X6, X3, X3
+	VPSHUFB X6, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3495,6 +3576,9 @@ TEXT ·asmAVXGreaterEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3509,10 +3593,10 @@ loop:
 	VCMPPD $0x1d, X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3623,6 +3707,9 @@ TEXT ·asmAVXLesserEqualsUint64(SB), NOSPLIT, $0-56
 	VMOVDQU const_high_bits_for_size_64<>+0(SB), X5
 	VPXOR   X5, X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X6
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3643,10 +3730,10 @@ loop:
 	VPCMPGTQ X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X6, X1, X1
+	VPSHUFB X6, X2, X2
+	VPSHUFB X6, X3, X3
+	VPSHUFB X6, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3742,6 +3829,9 @@ TEXT ·asmAVXLesserEqualsFloat64(SB), NOSPLIT, $0-56
 	MOVQ    b+24(FP), X0
 	VPSHUFB const_seven_through_zero<>+0(SB), X0, X0
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X5
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X1
@@ -3756,10 +3846,10 @@ loop:
 	VCMPPD $0x12, X4, X0, X4
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
-	VPSHUFB const_drop_seveneight<>+0(SB), X4, X4
+	VPSHUFB X5, X1, X1
+	VPSHUFB X5, X2, X2
+	VPSHUFB X5, X3, X3
+	VPSHUFB X5, X4, X4
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X1, BX
@@ -3834,6 +3924,9 @@ TEXT ·asmAVXIsNaNFloat32(SB), NOSPLIT, $0-48
 	MOVQ rows_base+24(FP), CX
 	MOVQ rows_len+32(FP), DX
 
+	// Drop every second-fourth byte from these registers
+	VMOVDQU const_drop_threequarters<>+0(SB), X2
+
 loop:
 	// Load 2 128-bit chunks into XMM registers
 	VMOVDQU (CX), X0
@@ -3844,8 +3937,8 @@ loop:
 	VCMPPS $0x04, X1, X1, X1
 
 	// Drop every second-fourth byte from these registers
-	VPSHUFB const_drop_threequarters<>+0(SB), X0, X0
-	VPSHUFB const_drop_threequarters<>+0(SB), X1, X1
+	VPSHUFB X2, X0, X0
+	VPSHUFB X2, X1, X1
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X0, BX
@@ -3926,6 +4019,9 @@ TEXT ·asmAVXIsNaNFloat64(SB), NOSPLIT, $0-48
 	MOVQ rows_base+24(FP), CX
 	MOVQ rows_len+32(FP), DX
 
+	// Drop every second-seventh byte from these registers
+	VMOVDQU const_drop_seveneight<>+0(SB), X4
+
 loop:
 	// Load 4 128-bit chunks into XMM registers
 	VMOVDQU (CX), X0
@@ -3940,10 +4036,10 @@ loop:
 	VCMPPD $0x04, X3, X3, X3
 
 	// Drop every second-seventh byte from these registers
-	VPSHUFB const_drop_seveneight<>+0(SB), X0, X0
-	VPSHUFB const_drop_seveneight<>+0(SB), X1, X1
-	VPSHUFB const_drop_seveneight<>+0(SB), X2, X2
-	VPSHUFB const_drop_seveneight<>+0(SB), X3, X3
+	VPSHUFB X4, X0, X0
+	VPSHUFB X4, X1, X1
+	VPSHUFB X4, X2, X2
+	VPSHUFB X4, X3, X3
 
 	// Take one bit of each byte and pack it into an R32
 	VPMOVMSKB X0, BX
